@@ -1,0 +1,7 @@
+[deps]
+Groups = "5d8bd718-bd84-11e8-3b40-ad14f4a32557"
+LowCohomologySOS = "70c9f613-c550-58ca-b626-6da403f9846d"
+PropertyT = "03b72c93-0167-51e2-8a1e-eb4ff1fb940d"
+
+[compat]
+Groups = "=0.7.4"
