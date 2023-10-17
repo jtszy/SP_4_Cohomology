@@ -1,6 +1,7 @@
 using Pkg
 Pkg.activate(normpath(joinpath(@__DIR__, "../")))
 using LinearAlgebra
+using SparseArrays
 ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS÷2
 LinearAlgebra.BLAS.set_num_threads(Sys.CPU_THREADS÷2)
 
@@ -142,3 +143,56 @@ quotient_hom_Behr(x_ab) == x_ab_group
 quotient_hom_Behr(x_2ab) == x_2ab_group
 quotient_hom_Behr(w_a) == w_a_group
 quotient_hom_Behr(w_b) == w_b_group
+
+Behr_relations = [
+    x_a * x_b * x_a^(-1) * x_b^(-1) * x_2ab^(-1) * x_ab^(-1),
+    x_a * x_ab * x_a^(-1) * x_ab^(-1) * x_2ab^(-2),
+    x_a * x_2ab * x_a^(-1) * x_2ab^(-1),
+    x_b * x_ab * x_b^(-1) * x_ab^(-1),
+    x_b * x_2ab * x_b^(-1) * x_2ab^(-1),
+    x_ab * x_2ab * x_ab^(-1) * x_2ab^(-1),
+    w_a * w_b^2 * w_a * w_b^(-2),
+    w_b * w_a^2 * w_b^(-1) * w_a^(-2),
+    (w_a * w_b)^2 * (w_b * w_a)^(-2),
+    w_b^4,
+    w_a * x_b * w_a^(-1) * x_2ab^(-1),
+    w_a * x_2ab * w_a^(-1) * x_b^(-1),
+    w_a * x_ab * w_a^(-1) * x_ab,
+    w_b * x_a * w_b^(-1) * x_ab^(-1),
+    w_b * x_ab * w_b^(-1) * x_a,
+    w_b * x_2ab * w_b^(-1) * x_2ab^(-1),
+    w_a * x_a * w_a^(-1) *x_a * w_a * x_a,
+    w_b * x_b * w_b^(-1) * x_b * w_b * x_b
+]
+
+# for r in Behr_relations
+#     @assert quotient_hom_Behr(r) == one(sp4)
+# end
+
+jacobian_matrix_Behr = LowCohomologySOS.jacobian_matrix(Behr_relations)
+
+RF_n = parent(first(jacobian_matrix_Behr))
+i = RF_n(RF_n.basis[100]).coeffs
+RF_n.basis[100]
+SparseArrays.nonzeroinds(i)
+
+support_jacobian = union!(
+    [one(sp4)],
+    [x_a_group, x_b_group, x_ab_group, x_2ab_group, w_a_group, w_b_group],
+    inv.([x_a_group, x_b_group, x_ab_group, x_2ab_group, w_a_group, w_b_group])
+)
+
+for entry in jacobian_matrix_Behr
+    for i in SparseArrays.nonzeroinds(entry.coeffs)
+        push!(support_jacobian, quotient_hom_Behr(RF_n.basis[i]))
+    end
+end
+
+support_jacobian = unique!([support_jacobian; inv.(support_jacobian)])
+
+Δ₁, I = LowCohomologySOS.spectral_gap_elements(
+    quotient_hom_Behr,
+    Behr_relations,
+    support_jacobian
+)
+
