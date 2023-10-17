@@ -2,6 +2,8 @@ using Pkg
 Pkg.activate(normpath(joinpath(@__DIR__, "../")))
 using LinearAlgebra
 using SparseArrays
+using JuMP
+using SCS
 ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS÷2
 LinearAlgebra.BLAS.set_num_threads(Sys.CPU_THREADS÷2)
 
@@ -196,3 +198,32 @@ support_jacobian = unique!([support_jacobian; inv.(support_jacobian)])
     support_jacobian
 )
 
+sos_problem_Behr = LowCohomologySOS.sos_problem(
+    Δ₁,
+    I
+)
+
+function scs_opt(;
+    accel = 10,
+    alpha = 1.5,
+    eps = 1e-9,
+    max_iters = 10_000,
+    verbose = true,
+)
+    return JuMP.optimizer_with_attributes(
+        SCS.Optimizer,
+        "acceleration_lookback" => accel,
+        "acceleration_interval" => max(abs(accel), 1),
+        "alpha" => alpha,
+        "eps_abs" => eps,
+        "eps_rel" => eps,
+        "linear_solver" => SCS.DirectSolver,
+        "max_iters" => max_iters,
+        "warm_start" => true,
+        "verbose" => verbose,
+    )
+end
+
+JuMP.set_optimizer(sos_problem_Behr, scs_opt(eps = 1e-7, max_iters = 6000))
+
+JuMP.optimize!(sos_problem_Behr)
