@@ -4,6 +4,7 @@ using LinearAlgebra
 using SparseArrays
 using JuMP
 using SCS
+using IntervalArithmetic
 ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS÷2
 LinearAlgebra.BLAS.set_num_threads(Sys.CPU_THREADS÷2)
 
@@ -207,7 +208,7 @@ function scs_opt(;
     accel = 10,
     alpha = 1.5,
     eps = 1e-9,
-    max_iters = 10_000,
+    max_iters = 6_000,
     verbose = true,
 )
     return JuMP.optimizer_with_attributes(
@@ -224,6 +225,18 @@ function scs_opt(;
     )
 end
 
-JuMP.set_optimizer(sos_problem_Behr, scs_opt(eps = 1e-7, max_iters = 6000))
+JuMP.set_optimizer(sos_problem_Behr, scs_opt(eps = 1e-7, max_iters = 15000))
 
 JuMP.optimize!(sos_problem_Behr)
+
+λ, Q =  LowCohomologySOS.get_solution(sos_problem_Behr)
+
+result_bool, result = LowCohomologySOS.certify_sos_decomposition(
+    Δ₁,
+    I,
+    λ,
+    Q,
+    support_jacobian
+)
+
+result
