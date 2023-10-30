@@ -193,7 +193,7 @@ end
 
 support_jacobian = unique!([support_jacobian; inv.(support_jacobian)])
 
-Δ₁, I = LowCohomologySOS.spectral_gap_elements(
+Δ₁, I_4 = LowCohomologySOS.spectral_gap_elements(
     quotient_hom_Behr,
     Behr_relations,
     support_jacobian
@@ -201,7 +201,7 @@ support_jacobian = unique!([support_jacobian; inv.(support_jacobian)])
 
 sos_problem_Behr = LowCohomologySOS.sos_problem(
     Δ₁,
-    I
+    I_4
 )
 
 function scs_opt(;
@@ -233,10 +233,8 @@ JuMP.optimize!(sos_problem_Behr)
 
 result_bool, result = LowCohomologySOS.certify_sos_decomposition(
     Δ₁,
-    I,
+    I_4,
     λ,
     Q,
     support_jacobian
 )
-
-result

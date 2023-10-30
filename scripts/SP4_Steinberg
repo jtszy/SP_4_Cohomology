@@ -5,6 +5,7 @@ using SparseArrays
 using JuMP
 using SCS
 using IntervalArithmetic
+using Serialization
 ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS÷2
 LinearAlgebra.BLAS.set_num_threads(Sys.CPU_THREADS÷2)
 
@@ -92,6 +93,15 @@ hom_Steinberg = let source = F_sp4_Steinberg, target = sp4
     Groups.Homomorphism(F, source, target)
 end
 
+# MatrixGroups.matrix_repr(hom_Steinberg(x_12)) == Steinberg_matrix[x_12]
+# MatrixGroups.matrix_repr(hom_Steinberg(x_21)) == Steinberg_matrix[x_21]
+# MatrixGroups.matrix_repr(hom_Steinberg(y_12)) == Steinberg_matrix[y_12]
+# MatrixGroups.matrix_repr(hom_Steinberg(yt_12)) == Steinberg_matrix[yt_12]
+# MatrixGroups.matrix_repr(hom_Steinberg(z_1)) == Steinberg_matrix[z_1]
+# MatrixGroups.matrix_repr(hom_Steinberg(zt_1)) == Steinberg_matrix[zt_1]
+# MatrixGroups.matrix_repr(hom_Steinberg(z_2)) == Steinberg_matrix[z_2]
+# MatrixGroups.matrix_repr(hom_Steinberg(zt_2)) == Steinberg_matrix[zt_2]
+
 function com(x,y)
     x*y*x^(-1)*y^(-1)
 end
@@ -173,7 +183,7 @@ function scs_opt(;
     )
 end
 
-JuMP.set_optimizer(sos_problem_Steinberg, scs_opt(eps = 1e-7, max_iters = 15000))
+JuMP.set_optimizer(sos_problem_Steinberg, scs_opt(eps = 1e-7, max_iters = 20000))
 
 JuMP.optimize!(sos_problem_Steinberg)
 
@@ -181,8 +191,22 @@ JuMP.optimize!(sos_problem_Steinberg)
 
 result_bool, result = LowCohomologySOS.certify_sos_decomposition(
     Δ₁,
-    I,
+    I_4,
     λ,
     Q,
+    support_jacobian
+)
+
+Solution = Dict("lambda" => λ, "Q" => Q)
+
+serialize("./Steinberg_Solution.sjl", Solution)
+
+Solution_read = deserialize("./Steinberg_Solution.sjl")
+
+LowCohomologySOS.certify_sos_decomposition(
+    Δ₁,
+    I_4,
+    Solution_read["lambda"],
+    Solution_read["Q"],
     support_jacobian
 )
