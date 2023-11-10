@@ -1,3 +1,6 @@
+name = "SP_4_Cohomology"
+uuid = "b5c651ce-a9e5-4e6a-8056-c9762bcc07b2"
+
 [deps]
 Groups = "5d8bd718-bd84-11e8-3b40-ad14f4a32557"
 IntervalArithmetic = "d1acc4aa-44c8-5952-acd4-ba5d80a2a253"
@@ -7,6 +10,7 @@ PropertyT = "03b72c93-0167-51e2-8a1e-eb4ff1fb940d"
 SCS = "c946c3f1-0d1f-5ce8-9dea-7daa1f7e2d13"
 Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 Groups = "=0.7.4"
