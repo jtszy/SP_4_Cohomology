@@ -81,14 +81,19 @@ Steinberg_matrix
 
 hom_Steinberg = SP_4_Cohomology.quotient_homomorphism(F_sp4_Steinberg, sp4, Steinberg_group)
 
-# MatrixGroups.matrix_repr(hom_Steinberg(x_12)) == Steinberg_matrix[x_12]
-# MatrixGroups.matrix_repr(hom_Steinberg(x_21)) == Steinberg_matrix[x_21]
-# MatrixGroups.matrix_repr(hom_Steinberg(y_12)) == Steinberg_matrix[y_12]
-# MatrixGroups.matrix_repr(hom_Steinberg(yt_12)) == Steinberg_matrix[yt_12]
-# MatrixGroups.matrix_repr(hom_Steinberg(z_1)) == Steinberg_matrix[z_1]
-# MatrixGroups.matrix_repr(hom_Steinberg(zt_1)) == Steinberg_matrix[zt_1]
-# MatrixGroups.matrix_repr(hom_Steinberg(z_2)) == Steinberg_matrix[z_2]
-# MatrixGroups.matrix_repr(hom_Steinberg(zt_2)) == Steinberg_matrix[zt_2]
+MatrixGroups.matrix_repr(hom_Steinberg(x_12)) == Steinberg_matrix[x_12]
+MatrixGroups.matrix_repr(hom_Steinberg(x_21)) == Steinberg_matrix[x_21]
+MatrixGroups.matrix_repr(hom_Steinberg(y_12)) == Steinberg_matrix[y_12]
+MatrixGroups.matrix_repr(hom_Steinberg(yt_12)) == Steinberg_matrix[yt_12]
+MatrixGroups.matrix_repr(hom_Steinberg(z_1)) == Steinberg_matrix[z_1]
+MatrixGroups.matrix_repr(hom_Steinberg(zt_1)) == Steinberg_matrix[zt_1]
+MatrixGroups.matrix_repr(hom_Steinberg(z_2)) == Steinberg_matrix[z_2]
+MatrixGroups.matrix_repr(hom_Steinberg(zt_2)) == Steinberg_matrix[zt_2]
+
+for gen in keys(Steinberg_matrix)
+    @assert MatrixGroups.matrix_repr(hom_Steinberg(gen)) == Steinberg_matrix[gen]
+end
+
 
 function com(x,y)
     x*y*x^(-1)*y^(-1)
