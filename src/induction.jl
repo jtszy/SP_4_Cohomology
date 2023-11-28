@@ -97,26 +97,81 @@ function sp2n_sp2m_embedding(N::Integer,M::Integer)
     end
 
     return result
- 
+
 end
 
-# function LowCohomologySOS.laplacians(
-#     G, # either SL(n,ℤ) or SAut(Fₙ)
-#     half_basis,
-#     S; # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
-#     twist_coeffs = true,
-#     sq_adj_op_ = "all"
-# )
-#     # TODO
-# end
+function LowCohomologySOS.laplacians(
+    G, # either SL(n,ℤ) or SAut(Fₙ)
+    half_basis,
+    S; # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
+    twist_coeffs = true,
+    sq_adj_op_ = "adj"
+)
+    N = div(size(MatrixGroups.matrix_repr(gens(G)[1]))[1],2)
 
-# function LowCohomologySOS.sq_adj_op(matrix, gen_set)
-#     # TODO
-# end
+    F_G = FreeGroup(alphabet(G))
+    quotient_hom = let source = F_G, target = G
+        Groups.Homomorphism((i, F, G) -> Groups.word_type(G)([i]), source, target)
+    end
 
-# function LowCohomologySOS._conj(
-#     t::fill in the type,
-#     σ::PermutationGroups.AbstractPerm,
-# )
-#     # TODO
-# end
+    # check if the quotient homomorphism is defined properly
+    @assert length(gens(F_G)) == length(S)
+    for i in eachindex(S)
+        @assert quotient_hom(gens(F_G,i)) == S[i]
+        @assert quotient_hom(gens(F_G,i)^(-1)) == S[i]^(-1)
+    end
+
+    relationsx = relations(G, F_G, S, symmetric_action, N, sq_adj_op_)
+    return LowCohomologySOS.spectral_gap_elements(quotient_hom, relationsx, half_basis, twist_coeffs = twist_coeffs)
+end
+
+function LowCohomologySOS.sq_adj_op(
+    Δ₁⁻,
+    S # generating set indexing Δ₁⁻
+)
+
+    #wyrzucić jeszcze podział na przeciecia jednoelementowe (Z_i, Z'_i)
+    RG = parent(first(Δ₁⁻))
+    Sp2N = parent(first(RG.basis))
+    sq_pairs = []
+    adj_pairs = []
+    op_pairs = []
+    A = alphabet(Sp2N)
+    for s in eachindex(S)
+        for t in eachindex(S)
+            s_i, s_j = A[word(S[s])[1]].i, A[word(S[s])[1]].j
+            t_i, t_j = A[word(S[t])[1]].i, A[word(S[t])[1]].j
+            if length(intersect!([s_i,s_j],[t_i,t_j])) == 2
+                push!(sq_pairs,(s,t))
+            elseif length(intersect!([s_i,s_j],[t_i,t_j])) == 1
+                push!(adj_pairs,(s,t))
+            else
+                push!(op_pairs,(s,t))
+            end
+        end
+    end
+    sq = [(i,j) in sq_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
+    adj = [(i,j) in adj_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
+    op = [(i,j) in op_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
+
+    @assert sq+adj+op == Δ₁⁻
+
+    return sq, adj, op
+end
+
+function LowCohomologySOS._conj(
+    t::fill in the type,
+    σ::PermutationGroups.AbstractPerm,
+)
+    # TODO
+end
+
+function LowCohomologySOS.relations(
+    G,
+    F_G::Groups.FreeGroup,
+    S, # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
+    N::Integer,
+    sq_adj_op_ = "all"
+)
+    #TODO
+end
