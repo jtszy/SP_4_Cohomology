@@ -100,6 +100,19 @@ function sp2n_sp2m_embedding(N::Integer,M::Integer)
 
 end
 
+SP_2N = MatrixGroups.SymplecticGroup{6}(Int8)
+
+
+A = alphabet(SP_2N)
+
+S = gens(SP_2N)
+
+length(S)
+
+A[word(S[1])[1]].j
+
+
+
 function LowCohomologySOS.laplacians(
     G, # either SL(n,ℤ) or SAut(Fₙ)
     half_basis,
@@ -129,19 +142,19 @@ function LowCohomologySOS.sq_adj_op(
     Δ₁⁻,
     S # generating set indexing Δ₁⁻
 )
-
-    #wyrzucić jeszcze podział na przeciecia jednoelementowe (Z_i, Z'_i)
     RG = parent(first(Δ₁⁻))
     Sp2N = parent(first(RG.basis))
+    N = Int8(sqrt(lengthg(gens(Sp2N))/2))
+    # mono_pairs = []
     sq_pairs = []
     adj_pairs = []
     op_pairs = []
     A = alphabet(Sp2N)
     for s in eachindex(S)
         for t in eachindex(S)
-            s_i, s_j = A[word(S[s])[1]].i, A[word(S[s])[1]].j
-            t_i, t_j = A[word(S[t])[1]].i, A[word(S[t])[1]].j
-            if length(intersect!([s_i,s_j],[t_i,t_j])) == 2
+            s_i, s_j = mod(A[word(S[s])[1]].i,N), mod(A[word(S[s])[1]].j,N)
+            t_i, t_j = mod(A[word(S[t])[1]].i,N), mod(A[word(S[t])[1]].j,N)
+            if sort([s_i,s_j]) == sort([t_i, t_j])
                 push!(sq_pairs,(s,t))
             elseif length(intersect!([s_i,s_j],[t_i,t_j])) == 1
                 push!(adj_pairs,(s,t))
@@ -159,19 +172,19 @@ function LowCohomologySOS.sq_adj_op(
     return sq, adj, op
 end
 
-function LowCohomologySOS._conj(
-    t::fill in the type,
-    σ::PermutationGroups.AbstractPerm,
-)
-    # TODO
-end
+# function LowCohomologySOS._conj(
+#     t::fill in the type,
+#     σ::PermutationGroups.AbstractPerm,
+# )
+#     # TODO
+# end
 
-function LowCohomologySOS.relations(
-    G,
-    F_G::Groups.FreeGroup,
-    S, # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
-    N::Integer,
-    sq_adj_op_ = "all"
-)
-    #TODO
-end
+# function LowCohomologySOS.relations(
+#     G,
+#     F_G::Groups.FreeGroup,
+#     S, # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
+#     N::Integer,
+#     sq_adj_op_ = "all"
+# )
+#     #TODO
+# end
