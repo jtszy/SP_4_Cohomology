@@ -134,7 +134,7 @@ function LowCohomologySOS.laplacians(
         @assert quotient_hom(gens(F_G,i)^(-1)) == S[i]^(-1)
     end
 
-    relationsx = relations(G, F_G, S, symmetric_action, N, sq_adj_op_)
+    relationsx = LowCohomologySOS.relations(G, F_G, S, symmetric_action, N, sq_adj_op_)
     return LowCohomologySOS.spectral_gap_elements(quotient_hom, relationsx, half_basis, twist_coeffs = twist_coeffs)
 end
 
@@ -145,7 +145,7 @@ function LowCohomologySOS.sq_adj_op(
     RG = parent(first(Δ₁⁻))
     Sp2N = parent(first(RG.basis))
     N = Int8(sqrt(lengthg(gens(Sp2N))/2))
-    # mono_pairs = []
+    mono_pairs = []
     sq_pairs = []
     adj_pairs = []
     op_pairs = []
@@ -155,7 +155,11 @@ function LowCohomologySOS.sq_adj_op(
             s_i, s_j = mod(A[word(S[s])[1]].i,N), mod(A[word(S[s])[1]].j,N)
             t_i, t_j = mod(A[word(S[t])[1]].i,N), mod(A[word(S[t])[1]].j,N)
             if sort([s_i,s_j]) == sort([t_i, t_j])
-                push!(sq_pairs,(s,t))
+                if s_i == s_j
+                    push!(mono_pairs,(s,t))
+                else
+                    push!(sq_pairs,(s,t))
+                end
             elseif length(intersect!([s_i,s_j],[t_i,t_j])) == 1
                 push!(adj_pairs,(s,t))
             else
