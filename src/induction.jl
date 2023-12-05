@@ -138,13 +138,13 @@ function LowCohomologySOS.laplacians(
     return LowCohomologySOS.spectral_gap_elements(quotient_hom, relationsx, half_basis, twist_coeffs = twist_coeffs)
 end
 
-function LowCohomologySOS.sq_adj_op(
+function LowCohomologySOS.mono_sq_adj_op(
     Δ₁⁻,
     S # generating set indexing Δ₁⁻
 )
     RG = parent(first(Δ₁⁻))
     Sp2N = parent(first(RG.basis))
-    N = Int8(sqrt(lengthg(gens(Sp2N))/2))
+    N = Int8(sqrt(length(gens(Sp2N))/2))
     mono_pairs = []
     sq_pairs = []
     adj_pairs = []
@@ -167,13 +167,14 @@ function LowCohomologySOS.sq_adj_op(
             end
         end
     end
+    mono = [(i,j) in mono_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
     sq = [(i,j) in sq_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
     adj = [(i,j) in adj_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
     op = [(i,j) in op_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
 
-    @assert sq+adj+op == Δ₁⁻
+    @assert mono+sq+adj+op == Δ₁⁻
 
-    return sq, adj, op
+    return mono, sq, adj, op
 end
 
 # function LowCohomologySOS._conj(

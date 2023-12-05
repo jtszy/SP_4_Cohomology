@@ -36,8 +36,8 @@ Sp2M_half_basis, Sp2M_sizes = Groups.wlmetric_ball(Sp2M_S_inv, radius = half_rad
 
 Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2N, Sp2N_half_basis, Sp2N_S, sq_adj_ = "adj");
 Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2M, Sp2M_half_basis, Sp2M_S, sq_adj_ = "adj");
-Sp2N_sq, Sp2N_adj, Sp2N_op = LowCohomologySOS.sq_adj_op(Sp2N_Δ₁⁻, Sp2N_S)
-Sp2M_sq, Sp2M_adj, Sp2M_op = LowCohomologySOS.sq_adj_op(Sp2M_Δ₁⁻, Sp2M_S)
+Sp2N_mono, Sp2N_sq, Sp2N_adj, Sp2N_op = LowCohomologySOS.mono_sq_adj_op(Sp2N_Δ₁⁻, Sp2N_S)
+Sp2M_mono, Sp2M_sq, Sp2M_adj, Sp2M_op = LowCohomologySOS.mono_sq_adj_op(Sp2M_Δ₁⁻, Sp2M_S)
 
 RG_prime = parent(first(Sp2M_Δ₁⁺))
 
