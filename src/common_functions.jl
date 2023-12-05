@@ -14,6 +14,10 @@ function quotient_homomorphism(free_group, sp_n, gen_dict)
     Groups.Homomorphism(F, free_group, sp_n)
 end
 
+function com(x,y)
+    x*y*x^(-1)*y^(-1)
+end
+
 function minimalistic_support(jacobian_matrix, quotient_homomorphism, gen_dict)
     RF_n = parent(first(jacobian_matrix))
     F_n = parent(first(RF_n.basis))

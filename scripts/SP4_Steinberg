@@ -94,11 +94,6 @@ for gen in keys(Steinberg_matrix)
     @assert MatrixGroups.matrix_repr(hom_Steinberg(gen)) == Steinberg_matrix[gen]
 end
 
-
-function com(x,y)
-    x*y*x^(-1)*y^(-1)
-end
-
 Steinberg_relations = [
     com(x_12, y_12) * z_1^(-2),
     com(x_21,y_12) * z_2^(-2),
