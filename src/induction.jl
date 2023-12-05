@@ -118,7 +118,7 @@ function LowCohomologySOS.laplacians(
     half_basis,
     S; # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
     twist_coeffs = true,
-    sq_adj_op_ = "adj"
+    sq_adj_ = "adj"
 )
     N = div(size(MatrixGroups.matrix_repr(gens(G)[1]))[1],2)
 
@@ -134,7 +134,7 @@ function LowCohomologySOS.laplacians(
         @assert quotient_hom(gens(F_G,i)^(-1)) == S[i]^(-1)
     end
 
-    relationsx = LowCohomologySOS.relations(G, F_G, S, symmetric_action, N, sq_adj_op_)
+    relationsx = LowCohomologySOS.relations(G, F_G, S, N, sq_adj_)
     return LowCohomologySOS.spectral_gap_elements(quotient_hom, relationsx, half_basis, twist_coeffs = twist_coeffs)
 end
 
@@ -183,12 +183,57 @@ end
 #     # TODO
 # end
 
-# function LowCohomologySOS.relations(
-#     G,
-#     F_G::Groups.FreeGroup,
-#     S, # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
-#     N::Integer,
-#     sq_adj_op_ = "all"
-# )
-#     #TODO
-# end
+function LowCohomologySOS.relations(
+    G,
+    F_G::Groups.FreeGroup,
+    S, # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
+    N::Integer,
+    sq_adj_ = "all"
+)
+    gen_dict = Dict(LowCohomologySOS.determine_letter(S[i]) => gens(F_G, i) for i in eachindex(S))
+
+    range_as_list = [i for i in 1:N]
+    pairs = [(i,j) for i ∈ 1:N for j ∈ deleteat!(copy(range_as_list), findall(j->j==i,copy(range_as_list)))]
+    triples = [(i,j,k) for i ∈ range_as_list
+                    for j ∈ deleteat!(copy(range_as_list), findall(j->j==i,copy(range_as_list))) 
+                    for k ∈ deleteat!(copy(range_as_list), findall(k->k∈[i,j],copy(range_as_list)))]
+    
+    x(i,j) = gen_dict[MatrixGroups.ElementarySymplectic{2*N}(:A,i,j)]
+    y(i,j) = gen_dict[MatrixGroups.ElementarySymplectic{2*N}(:B,i+N,j)]
+    yt(i,j) = gen_dict[MatrixGroups.ElementarySymplectic{2*N}(:B,j,i+N)]
+    z(i) = gen_dict[MatrixGroups.ElementarySymplectic{2*N}(:B,i+N,i)]
+    zt(i) = gen_dict[MatrixGroups.ElementarySymplectic{2*N}(:B,i,i+N)]
+
+    relations_adj = vcat(
+        [com(x(i,j),x(j,k))*x(i,k)^(-1) for (i,j,k) in triples],
+        [com(x(i,j),y(min(j,k),max(j,k)))*y(min(i,k),max(i,k))^(-1) for (i,j,k) in triples],
+        [com(x(i,j),yt(min(i,k),max(i,k)))*yt(min(j,k),max(j,k)) for (i,j,k) in triples]                
+    )
+
+    relations_sq = vcat(
+        [com(x(i,j),y(min(i,j),max(i,j)))*z(i)^(-2) for (i,j) in pairs],
+        [com(x(i,j),yt(min(i,j),max(i,j)))*zt(j)^2 for (i,j) in pairs],
+        [com(x(i,j),z(j))*(z(i)*y(min(i,j),max(i,j)))^(-1) for (i,j) in pairs],
+        [com(z(i),y(min(i,j),max(i,j))) for (i,j) in pairs],
+        [com(x(i,j),zt(i))*yt(min(i,j),max(i,j))*zt(j)^(-1) for (i,j) in pairs],
+        [com(zt(j),yt(min(i,j),max(i,j))^(-1)) for (i,j) in pairs],
+        [com(y(min(i,j),max(i,j)),zt(i))*z(j)*x(j,i)^(-1) for (i,j) in pairs],
+        [com(x(j,i),zt(j)^(-1)) for (i,j) in pairs],
+        [com(yt(min(i,j),max(i,j)), z(i))*zt(j)*x(i,j) for (i,j) in pairs],
+        [com(x(i,j),z(j)) for (i,j) in pairs]
+    )
+
+    if sq_adj_ == "sq" 
+        return relations_sq
+    elseif sq_adj_ == "adj"
+        return relations_adj
+    end
+
+    return vcat(relations_sq, relations_adj)
+end
+
+N = 4
+range_as_list = [i for i in 1:N]
+pairs = [(i,j) for i ∈ 1:N for j ∈ deleteat!(copy(range_as_list), findall(j->j==i,copy(range_as_list)))]
+
+

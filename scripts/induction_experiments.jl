@@ -12,10 +12,8 @@ using Groups
 
 # TODO: adjust the whole code below to sp2ns
 
-const N = 2
-const M = 3
-
-i_ = SP_4_Cohomology.sln_slm_embedding(3,3)
+const N = 3
+const M = 4
 
 i = SP_4_Cohomology.sp2n_sp2m_embedding(2*N, 2*M)
 
@@ -36,8 +34,8 @@ end;
 Sp2N_half_basis, Sp2N_sizes = Groups.wlmetric_ball(Sp2N_S_inv, radius = half_radius);
 Sp2M_half_basis, Sp2M_sizes = Groups.wlmetric_ball(Sp2M_S_inv, radius = half_radius);
 
-Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2N, Sp2N_half_basis, Sp2N_S, sq_adj_op_ = "adj");
-Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2M, Sp2M_half_basis, Sp2M_S, sq_adj_op_ = "adj");
+Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2N, Sp2N_half_basis, Sp2N_S, sq_adj_ = "adj");
+Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2M, Sp2M_half_basis, Sp2M_S, sq_adj_ = "adj");
 Sp2N_sq, Sp2N_adj, Sp2N_op = LowCohomologySOS.sq_adj_op(Sp2N_Δ₁⁻, Sp2N_S)
 Sp2M_sq, Sp2M_adj, Sp2M_op = LowCohomologySOS.sq_adj_op(Sp2M_Δ₁⁻, Sp2M_S)
 
