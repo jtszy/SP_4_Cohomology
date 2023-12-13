@@ -5,6 +5,7 @@ using Groups
 using JuMP
 using SCS
 using LowCohomologySOS
+using PermutationGroups
 
 include("common_functions.jl")
 include("utils.jl")

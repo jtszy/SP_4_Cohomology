@@ -36,8 +36,8 @@ Sp2M_half_basis, Sp2M_sizes = Groups.wlmetric_ball(Sp2M_S_inv, radius = half_rad
 
 Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2N, Sp2N_half_basis, Sp2N_S, sq_adj_ = "adj");
 Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2M, Sp2M_half_basis, Sp2M_S, sq_adj_ = "adj");
-Sp2N_mono, Sp2N_sq, Sp2N_adj, Sp2N_op = LowCohomologySOS.mono_sq_adj_op(Sp2N_Δ₁⁻, Sp2N_S)
-Sp2M_mono, Sp2M_sq, Sp2M_adj, Sp2M_op = LowCohomologySOS.mono_sq_adj_op(Sp2M_Δ₁⁻, Sp2M_S)
+Sp2N_mono, Sp2N_sq, Sp2N_adj, Sp2N_op = SP_4_Cohomology.mono_sq_adj_op(Sp2N_Δ₁⁻, Sp2N_S)
+Sp2M_mono, Sp2M_sq, Sp2M_adj, Sp2M_op = SP_4_Cohomology.mono_sq_adj_op(Sp2M_Δ₁⁻, Sp2M_S)
 
 RG_prime = parent(first(Sp2M_Δ₁⁺))
 
@@ -50,14 +50,22 @@ using PermutationGroups
 
 Δ₁⁺_emb_symmetrized = let
     Σ = PermutationGroups.SymmetricGroup(3)
-    LowCohomologySOS.weyl_symmetrize_matrix(Δ₁⁺_emb, Σ, LowCohomologySOS._conj, Sp2M_S)
+    LowCohomologySOS.weyl_symmetrize_matrix(Δ₁⁺_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S)
 end
 
 adj_emb_symmetrized = let
     Σ = PermutationGroups.SymmetricGroup(3)
-    LowCohomologySOS.weyl_symmetrize_matrix(adj_emb, Σ, LowCohomologySOS._conj, Sp2M_S)
+    LowCohomologySOS.weyl_symmetrize_matrix(adj_emb, Σ, SP_4_Cohomology.conj, Sp2M_S)
 end
 
 # TODO change scalars below:
 24*Sp2M_Δ₁⁺-Δ₁⁺_emb_symmetrized # it looks like symmetrization works for upper Laplacians!
 24*Sp2M_adj-adj_emb_symmetrized # Adj symmetrizes as well with the same pace!!
+
+A = gens(Sp2N)[1]
+Σ = PermutationGroups.SymmetricGroup(3)
+σ = gens(Σ)[1]
+
+SP_4_Cohomology.conjugation('a', 'b')
+
+B = Int8[1 1 0 0 0 0 0 0; 0 1 0 0 0 0 0 0; 0 0 1 0 0 0 0 0; 0 0 0 1 0 0 0 0; 0 0 0 0 1 0 0 0; 0 0 0 0 -1 1 0 0; 0 0 0 0 0 0 1 0; 0 0 0 0 0 0 0 1]

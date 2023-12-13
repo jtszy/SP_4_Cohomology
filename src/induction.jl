@@ -138,7 +138,7 @@ function LowCohomologySOS.laplacians(
     return LowCohomologySOS.spectral_gap_elements(quotient_hom, relationsx, half_basis, twist_coeffs = twist_coeffs)
 end
 
-function LowCohomologySOS.mono_sq_adj_op(
+function mono_sq_adj_op(
     Δ₁⁻,
     S # generating set indexing Δ₁⁻
 )
@@ -177,12 +177,46 @@ function LowCohomologySOS.mono_sq_adj_op(
     return mono, sq, adj, op
 end
 
-# function LowCohomologySOS._conj(
-#     t::fill in the type,
-#     σ::PermutationGroups.AbstractPerm,
-# )
-#     # TODO
-# end
+function conjugation(
+    l::MatrixGroups.ElementarySymplectic,
+    # σ::PermutationGroups.AbstractPerm
+    # l,
+    σ
+)
+    l_matrix = MatrixGroups.matrix_repr(l)
+    N = size(l_matrix)[1]
+    n = div(N,2)
+    type = :B
+    l_transpose = 1
+    l_i, l_j = -1, -1
+
+    for i in 1:N
+        for j in 1:N
+            if l_matrix[i,j] < 0
+                type = :A
+            end
+            if l_matrix[i,j] == 1 && i != j
+                l_i = i % n
+                l_j = j % n
+
+                l_i = (l_i == 0) ? n : l_i
+                l_j = (l_j == 0) ? n : l_j
+
+                if i < j
+                    l_transpose = 0
+                end
+            end
+        end
+    end
+
+    if type == :A
+        @info l_matrix
+        @info l_i, l_i^σ, l_j, l_j^σ
+        return Groups.MatrixGroups.ElementarySymplectic{N}(type, l_i^σ, l_j^σ)
+    end
+
+    return Groups.MatrixGroups.ElementarySymplectic{N}(type, l_i^σ + (1 - l_transpose)*n, l_j^σ + l_transpose*n)
+end
 
 function LowCohomologySOS.relations(
     G,
