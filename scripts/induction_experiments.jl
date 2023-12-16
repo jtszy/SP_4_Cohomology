@@ -8,6 +8,7 @@ using LowCohomologySOS
 using SP_4_Cohomology
 # using StarAlgebras
 using Groups
+using PermutationGroups
 
 
 # TODO: adjust the whole code below to sp2ns
@@ -46,8 +47,6 @@ adj_emb = LowCohomologySOS.embed_matrix(Sp2N_adj, i, RG_prime)
 
 @assert parent(first(Δ₁⁺_emb)) == parent(first(adj_emb)) == parent(first(Sp2M_Δ₁⁺)) == parent(first(Sp2M_adj))
 
-using PermutationGroups
-
 Δ₁⁺_emb_symmetrized = let
     Σ = PermutationGroups.SymmetricGroup(3)
     LowCohomologySOS.weyl_symmetrize_matrix(Δ₁⁺_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S)
@@ -55,7 +54,7 @@ end
 
 adj_emb_symmetrized = let
     Σ = PermutationGroups.SymmetricGroup(3)
-    LowCohomologySOS.weyl_symmetrize_matrix(adj_emb, Σ, SP_4_Cohomology.conj, Sp2M_S)
+    LowCohomologySOS.weyl_symmetrize_matrix(adj_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S)
 end
 
 # TODO change scalars below:
@@ -64,8 +63,7 @@ end
 
 A = gens(Sp2N)[1]
 Σ = PermutationGroups.SymmetricGroup(3)
-σ = gens(Σ)[1]
+sigma = gens(Σ)[1]
 
-SP_4_Cohomology.conjugation('a', 'b')
-
-B = Int8[1 1 0 0 0 0 0 0; 0 1 0 0 0 0 0 0; 0 0 1 0 0 0 0 0; 0 0 0 1 0 0 0 0; 0 0 0 0 1 0 0 0; 0 0 0 0 -1 1 0 0; 0 0 0 0 0 0 1 0; 0 0 0 0 0 0 0 1]
+SP_4_Cohomology.conjugation(A^(-1), sigma)
+SP_4_Cohomology.elementary_conjugation(A,sigma)

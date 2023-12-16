@@ -177,11 +177,9 @@ function mono_sq_adj_op(
     return mono, sq, adj, op
 end
 
-function conjugation(
+function elementary_conjugation(
     l::MatrixGroups.ElementarySymplectic,
-    # σ::PermutationGroups.AbstractPerm
-    # l,
-    σ
+    σ::PermutationGroups.AbstractPerm
 )
     l_matrix = MatrixGroups.matrix_repr(l)
     N = size(l_matrix)[1]
@@ -192,9 +190,11 @@ function conjugation(
 
     for i in 1:N
         for j in 1:N
+
             if l_matrix[i,j] < 0
                 type = :A
             end
+
             if l_matrix[i,j] == 1 && i != j
                 l_i = i % n
                 l_j = j % n
@@ -216,6 +216,28 @@ function conjugation(
     end
 
     return Groups.MatrixGroups.ElementarySymplectic{N}(type, l_i^σ + (1 - l_transpose)*n, l_j^σ + l_transpose*n)
+end
+
+function conjugation(
+    l,
+    # l::MatrixGroups.ElementarySymplectic,
+    σ::PermutationGroups.AbstractPerm
+)
+    l_matrix = MatrixGroups.matrix_repr(l)
+    N = size(l_matrix)[1]
+    n = div(N,2)
+
+    for i in 1:N
+        for j in 1:N
+            if l_matrix[i,j] < 0 && (i <= n || j <= n)
+                print(i,j)
+                return elementary_conjugation(l^(-1), σ)^(-1)
+            end
+        end
+    end
+
+    return elementary_conjugation(l,σ)
+    
 end
 
 function LowCohomologySOS.relations(
