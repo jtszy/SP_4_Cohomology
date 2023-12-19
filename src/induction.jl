@@ -1,3 +1,19 @@
+#aux functions for sp2n_sp2m_embedding
+
+function ind_embed((type, i, j), N, M)
+    if type == :A
+        return (:A, i, j)
+
+    elseif i < j
+        return (:B, i, j + Int8((M - N)/2))
+
+    else
+        return (:B, i + Int8((M - N)/2), j)
+    
+    end
+
+end
+
 function sp2n_sp2m_embedding(N::Integer,M::Integer)
     @assert N <= M
     @assert mod(N, 2) == 0
@@ -21,14 +37,14 @@ function sp2n_sp2m_embedding(N::Integer,M::Integer)
         res = Dict(
            let Aij = MatrixGroups.ElementarySymplectic{N}(:A, i, j)
                Sp_N([alphabet(Sp_N)[Aij]])
-           end => ("A", i, j)
+           end => (:A, i, j)
            for (i,j) in ind_A(Int8(N/2))
         )
 
         res_ = Dict(
             let Bij = MatrixGroups.ElementarySymplectic{N}(:B, i, j)
                 Sp_N([alphabet(Sp_N)[Bij]])
-            end => ("B", i, j)
+            end => (:B, i, j)
             for (i,j) in ind_B(Int8(N/2))
         )
 
@@ -38,7 +54,7 @@ function sp2n_sp2m_embedding(N::Integer,M::Integer)
     end
 
     S_Sp_M = let 
-        res = Dict(("A",i,j) => 
+        res = Dict((:A,i,j) => 
         let Aij = MatrixGroups.ElementarySymplectic{M}(:A, i, j)
             Sp_M([alphabet(Sp_M)[Aij]])
 
@@ -46,7 +62,7 @@ function sp2n_sp2m_embedding(N::Integer,M::Integer)
         for (i,j) in ind_A(Int8(M/2))
         )
 
-        res_ =Dict(("B",i,j) =>
+        res_ =Dict((:B,i,j) =>
         let Bij = MatrixGroups.ElementarySymplectic{M}(:B, i , j)
             Sp_M([alphabet(Sp_M)[Bij]])
 
@@ -57,34 +73,20 @@ function sp2n_sp2m_embedding(N::Integer,M::Integer)
         merge!(res, res_)
         res
 
-    end
-
-    function ind_embed((type, i, j))
-            if type == "A"
-                return ("A", i, j)
-
-            elseif i < j
-                return ("B", i, j + Int8((M - N)/2))
-
-            else
-                return ("B", i + Int8((M - N)/2), j)
-            
-            end
-
     end    
 
     function f(letter_id, Sp_N, G)
         if letter_id <= length(gens(Sp_N))
             N_elem = Sp_N([letter_id])
             N_ind = inds_S_Sp_N[N_elem]
-            M_ind = ind_embed(N_ind)
+            M_ind = ind_embed(N_ind, N, M)
             M_elem = S_Sp_M[M_ind]
             return word(M_elem)
 
         else 
             N_elem = inv(Sp_N([letter_id]))
             N_ind = inds_S_Sp_N[N_elem]
-            M_ind = ind_embed(N_ind)
+            M_ind = ind_embed(N_ind, N, M)
             M_elem = inv(S_Sp_M[M_ind])
             return word(M_elem)
 
@@ -97,7 +99,7 @@ function sp2n_sp2m_embedding(N::Integer,M::Integer)
     end
 
     return result
-
+    
 end
 
 SP_2N = MatrixGroups.SymplecticGroup{6}(Int8)
@@ -178,40 +180,19 @@ function mono_sq_adj_op(
 end
 
 function elementary_conjugation(
+    # l,
     l::MatrixGroups.ElementarySymplectic,
-    σ::PermutationGroups.AbstractPerm
+    σ::PermutationGroups.AbstractPerm 
 )
     l_matrix = MatrixGroups.matrix_repr(l)
     N = size(l_matrix)[1]
     n = div(N,2)
-    type = :B
-    l_transpose = 1
-    l_i, l_j = -1, -1
 
-    for i in 1:N
-        for j in 1:N
-
-            if l_matrix[i,j] < 0
-                type = :A
-            end
-
-            if l_matrix[i,j] == 1 && i != j
-                l_i = i % n
-                l_j = j % n
-
-                l_i = (l_i == 0) ? n : l_i
-                l_j = (l_j == 0) ? n : l_j
-
-                if i < j
-                    l_transpose = 0
-                end
-            end
-        end
-    end
+    type, l_i, l_j, l_transpose = elementary_element_info(l_matrix)
 
     if type == :A
-        @info l_matrix
-        @info l_i, l_i^σ, l_j, l_j^σ
+        # @info l_matrix
+        # @info l_i, l_i^σ, l_j, l_j^σ
         return Groups.MatrixGroups.ElementarySymplectic{N}(type, l_i^σ, l_j^σ)
     end
 
@@ -219,8 +200,8 @@ function elementary_conjugation(
 end
 
 function conjugation(
-    l,
-    # l::MatrixGroups.ElementarySymplectic,
+    # l,
+    l::MatrixGroups.ElementarySymplectic,
     σ::PermutationGroups.AbstractPerm
 )
     l_matrix = MatrixGroups.matrix_repr(l)
@@ -230,7 +211,6 @@ function conjugation(
     for i in 1:N
         for j in 1:N
             if l_matrix[i,j] < 0 && (i <= n || j <= n)
-                print(i,j)
                 return elementary_conjugation(l^(-1), σ)^(-1)
             end
         end

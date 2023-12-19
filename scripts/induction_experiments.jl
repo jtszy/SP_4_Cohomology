@@ -53,17 +53,20 @@ adj_emb = LowCohomologySOS.embed_matrix(Sp2N_adj, i, RG_prime)
 end
 
 adj_emb_symmetrized = let
-    Σ = PermutationGroups.SymmetricGroup(3)
+    Σ = PermutationGroups.SymmetricGroup(4)
     LowCohomologySOS.weyl_symmetrize_matrix(adj_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S)
 end
 
 # TODO change scalars below:
-24*Sp2M_Δ₁⁺-Δ₁⁺_emb_symmetrized # it looks like symmetrization works for upper Laplacians!
-24*Sp2M_adj-adj_emb_symmetrized # Adj symmetrizes as well with the same pace!!
+3*Sp2M_Δ₁⁺-Δ₁⁺_emb_symmetrized # it looks like symmetrization works for upper Laplacians!
+6*Sp2M_adj-adj_emb_symmetrized # Adj symmetrizes as well with the same pace!!
+
+@info Sp2M_Δ₁⁺[1,1]
+@info Δ₁⁺_emb_symmetrized[1,1]
 
 A = gens(Sp2N)[1]
 Σ = PermutationGroups.SymmetricGroup(3)
 sigma = gens(Σ)[1]
 
 SP_4_Cohomology.conjugation(A^(-1), sigma)
-SP_4_Cohomology.elementary_conjugation(A,sigma)
+SP_4_Cohomology.elementary_conjugation(A, sigma)

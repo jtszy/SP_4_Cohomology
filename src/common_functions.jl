@@ -38,3 +38,34 @@ function minimalistic_support(jacobian_matrix, quotient_homomorphism, gen_dict)
     support_jacobian = unique!([support_jacobian; inv.(support_jacobian)])
     return support_jacobian
 end
+
+function elementary_element_info(l_matrix)
+    N = size(l_matrix)[1]
+    n = div(N,2)
+    type = :B
+    l_transpose = 1
+    l_i, l_j = -1, -1
+
+    for i in 1:N
+        for j in 1:N
+
+            if l_matrix[i,j] < 0
+                type = :A
+            end
+
+            if l_matrix[i,j] == 1 && i != j
+                l_i = i % n
+                l_j = j % n
+
+                l_i = (l_i == 0) ? n : l_i
+                l_j = (l_j == 0) ? n : l_j
+
+                if i < j
+                    l_transpose = 0
+                end
+            end
+        end
+    end
+
+    return (type, l_i, l_j, l_transpose)
+end
