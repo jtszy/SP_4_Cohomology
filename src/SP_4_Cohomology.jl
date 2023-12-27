@@ -6,6 +6,7 @@ using JuMP
 using SCS
 using LowCohomologySOS
 using PermutationGroups
+using StarAlgebras
 
 include("common_functions.jl")
 include("utils.jl")

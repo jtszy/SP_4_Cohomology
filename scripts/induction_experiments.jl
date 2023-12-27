@@ -6,10 +6,9 @@ LinearAlgebra.BLAS.set_num_threads(Sys.CPU_THREADS÷2)
 
 using LowCohomologySOS
 using SP_4_Cohomology
-# using StarAlgebras
+using StarAlgebras
 using Groups
 using PermutationGroups
-
 
 # TODO: adjust the whole code below to sp2ns
 
@@ -59,14 +58,39 @@ end
 
 # TODO change scalars below:
 3*Sp2M_Δ₁⁺-Δ₁⁺_emb_symmetrized # it looks like symmetrization works for upper Laplacians!
-6*Sp2M_adj-adj_emb_symmetrized # Adj symmetrizes as well with the same pace!!
+(6*Sp2M_adj-adj_emb_symmetrized) # Adj symmetrizes as well with the same pace!!
 
 @info Sp2M_Δ₁⁺[1,1]
 @info Δ₁⁺_emb_symmetrized[1,1]
 
-A = gens(Sp2N)[1]
+@info Sp2M_adj[1,2]
+@info adj_emb_symmetrized[1,2]
+
+A = gens(Sp2N)[10]
 Σ = PermutationGroups.SymmetricGroup(3)
 sigma = gens(Σ)[1]
 
 SP_4_Cohomology.conjugation(A^(-1), sigma)
 SP_4_Cohomology.elementary_conjugation(A, sigma)
+
+for s in gens(Sp2N)
+    @info s, SP_4_Cohomology.conjugation(s, sigma)
+    @info s, SP_4_Cohomology.conjugation(s^(-1), sigma)
+end
+
+@info gens(Sp2N)[10], SP_4_Cohomology.conjugation(gens(Sp2N)[10], sigma)
+@info gens(Sp2N)[13], SP_4_Cohomology.conjugation(gens(Sp2N)[13], sigma)
+
+B = gens(Sp2M)[19]
+B_M = MatrixGroups.matrix_repr(B)
+
+SP_4_Cohomology.elementary_element_info(B_M)
+print(B_M)
+
+MatrixGroups.matrix_repr(Groups.MatrixGroups.ElementarySymplectic{6}(:B, 2, 4))
+MatrixGroups.matrix_repr(Groups.MatrixGroups.ElementarySymplectic{6}(:B, 1, 5))
+
+B = Groups.MatrixGroups.ElementarySymplectic{6}(:B, 2, 4)
+typeof(B)
+
+gens(Sp2N)[7]

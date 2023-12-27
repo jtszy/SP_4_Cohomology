@@ -1,3 +1,6 @@
+Base.adjoint(X::AlgebraElement) = StarAlgebras.star(X)
+StarAlgebras.star(g::Groups.AbstractFPGroupElement) = inv(g)
+
 function quotient_homomorphism(free_group, sp_n, gen_dict)
     function F(i, source, target)
         if source([i]) == one(free_group)
