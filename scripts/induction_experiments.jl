@@ -12,8 +12,8 @@ using PermutationGroups
 
 # TODO: adjust the whole code below to sp2ns
 
-const N = 3
-const M = 4
+N = 3
+M = 4
 
 i = SP_4_Cohomology.sp2n_sp2m_embedding(2*N, 2*M)
 
@@ -31,11 +31,33 @@ Sp2M_S_inv = let s = Sp2M_S
     [s; inv.(s)]
 end;
 
+Sp2N_S_2 = []
+Sp2M_S_2 = []
+
+for s in Sp2N_S 
+    _, i, j, _ = SP_4_Cohomology.elementary_element_info(MatrixGroups.matrix_repr(s))
+    if i != j
+        push!(Sp2N_S_2, s)
+    end
+end
+
+for s in Sp2M_S 
+    _, i, j, _ = SP_4_Cohomology.elementary_element_info(MatrixGroups.matrix_repr(s))
+    if i != j
+        push!(Sp2M_S_2, s)
+    end
+end
+
+
 Sp2N_half_basis, Sp2N_sizes = Groups.wlmetric_ball(Sp2N_S_inv, radius = half_radius);
 Sp2M_half_basis, Sp2M_sizes = Groups.wlmetric_ball(Sp2M_S_inv, radius = half_radius);
 
-Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2N, Sp2N_half_basis, Sp2N_S, sq_adj_ = "adj");
-Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2M, Sp2M_half_basis, Sp2M_S, sq_adj_ = "adj");
+# Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2N, Sp2N_half_basis, Sp2N_S, sq_adj_ = "adj");
+# Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2M, Sp2M_half_basis, Sp2M_S, sq_adj_ = "adj");
+
+Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2N, Sp2N_half_basis, Sp2N_S_2, sq_adj_ = "adj");
+Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2M, Sp2M_half_basis, Sp2M_S_2, sq_adj_ = "adj");
+
 Sp2N_mono, Sp2N_sq, Sp2N_adj, Sp2N_op = SP_4_Cohomology.mono_sq_adj_op(Sp2N_Δ₁⁻, Sp2N_S)
 Sp2M_mono, Sp2M_sq, Sp2M_adj, Sp2M_op = SP_4_Cohomology.mono_sq_adj_op(Sp2M_Δ₁⁻, Sp2M_S)
 

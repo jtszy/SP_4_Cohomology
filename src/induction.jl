@@ -216,7 +216,6 @@ function conjugation(
 end
 
 function LowCohomologySOS.relations(
-    G,
     F_G::Groups.FreeGroup,
     S, # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
     N::Integer,

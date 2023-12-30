@@ -32,7 +32,7 @@ end
 
 # Y_1_2^T -> B_3_2
 
-@testset "laplacians" begin
+@testset "lower_laplacians" begin
     N = 6
     Sp_N = MatrixGroups.SymplecticGroup{N}(Int8)
     generators_Sp_N = gens(Sp_N)
@@ -60,27 +60,57 @@ end
             t = generators_Sp_N[j]
             @test (one(RG) - RG(s))*(one(RG) - RG(t))' == Δ₁⁻[i,j]
         end
+
     end
 
-    # r1 = [x(1,2), x(2,3)] = x(1,3)
-    # r2 = [x(1,3), x(3,2)] = x(1,2)
-    # r3 = [x(2,1), x(1,3)] = x(2,3)
-    # r4 = [x(2,3), x(3,1)] = x(2,1)
-    # r5 = [x(3,1), x(1,2)] = x(3,2)
-    # r6 = [x(3,2), x(2,1)] = x(3,1)
+end
 
-    # r7 = [x(1,2), y(2,3)] = y(1,3)
-    # r8 = [x(1,3), y(2,3)] = y(1,2)
-    # r9 = [x(2,1), y(1,3)] = y(2,3)
-    # r10 = [x(2,3), y(1,3)] = y(1,2)
-    # r11 = [x(3,1), y(1,2)] = y(2,3)
-    # r12 = [x(3,2), y(1,2)] = y(1,3)
+@testset "relations" begin
 
-    # r13 = [x(1,2), yt(1,3)] = y(2,3)^(-1)
-    # r14 = [x(1,3), yt(1,2)] = y(2,3)^(-1)
-    # r15 = [x(2,1), yt(2,3)] = y(1,3)^(-1)
-    # r16 = [x(2,3), yt(1,2)] = y(1,3)^(-1)
-    # r17 = [x(3,1), yt(2,3)] = y(1,2)^(-1)
-    # r18 = [x(3,2), yt(1,3)] = y(1,2)^(-1)
+    N = 6
+    Sp_N = MatrixGroups.SymplecticGroup{N}(Int8)
+    S = gens(Sp_N)
+
+    F = FreeGroup(alphabet(Sp_N))
+
+    gen_dict = Dict(LowCohomologySOS.determine_letter(S[i]) => gens(F, i) for i in eachindex(S))
+
+    x(i,j) = gen_dict[MatrixGroups.ElementarySymplectic{N}(:A,i,j)]
+    y(i,j) = gen_dict[MatrixGroups.ElementarySymplectic{N}(:B,max(i,j),min(i,j) + div(N,2))]
+    yt(i,j) = gen_dict[MatrixGroups.ElementarySymplectic{N}(:B,min(i,j) + div(N,2),max(i,j))]
+    z(i) = gen_dict[MatrixGroups.ElementarySymplectic{N}(:B,i,i + div(N,2))]
+    zt(i) = gen_dict[MatrixGroups.ElementarySymplectic{N}(:B,i + div(N,2),i)]
+
+    com(s,t) = SP_4_Cohomology.com(s,t)
+
+    relations = [
+        com(x(1,2), x(2,3)) * x(1,3)^(-1),
+        com(x(1,3), x(3,2)) * x(1,2)^(-1),
+        com(x(2,1), x(1,3)) * x(2,3)^(-1),
+        com(x(2,3), x(3,1)) * x(2,1)^(-1),
+        com(x(3,1), x(1,2)) * x(3,2)^(-1),
+        com(x(3,2), x(2,1)) * x(3,1)^(-1),
+        com(x(1,2), y(2,3)) * y(1,3)^(-1),
+        com(x(1,3), y(2,3)) * y(1,2)^(-1),
+        com(x(2,1), y(1,3)) * y(2,3)^(-1),
+        com(x(2,3), y(1,3)) * y(1,2)^(-1),
+        com(x(3,1), y(1,2)) * y(2,3)^(-1),
+        com(x(3,2), y(1,2)) * y(1,3)^(-1),
+        com(x(1,2), yt(1,3)) * yt(2,3),
+        com(x(1,3), yt(1,2)) * yt(2,3),
+        com(x(2,1), yt(2,3)) * yt(1,3),
+        com(x(2,3), yt(1,2)) * yt(1,3),
+        com(x(3,1), yt(2,3)) * yt(1,2),
+        com(x(3,2), yt(1,3)) * yt(1,2)
+    ]
+
+    relations_LowCohomology = LowCohomologySOS.relations(F,S,div(N,2), "adj")
+
+    @test size(relations) == size(relations_LowCohomology)
+
+    for r in relations
+        @test r ∈ relations_LowCohomology
+    end
 
 end
+
