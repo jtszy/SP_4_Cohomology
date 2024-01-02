@@ -123,8 +123,23 @@ function LowCohomologySOS.laplacians(
         @assert quotient_hom(gens(F_G,i)^(-1)) == S[i]^(-1)
     end
 
-    relationsx = LowCohomologySOS.relations(G, F_G, S, N, sq_adj_)
+    relationsx = LowCohomologySOS.relations(F_G, S, N, sq_adj_)
     return LowCohomologySOS.spectral_gap_elements(quotient_hom, relationsx, half_basis, twist_coeffs = twist_coeffs)
+end
+
+# For experimental purposes
+function lower_laplacian(
+    G,
+    half_basis,
+    S
+)
+    Δ₁⁻ = let RG = LowCohomologySOS.group_ring(G, half_basis, star_multiplication = false)
+        d₀x = LowCohomologySOS.d₀(RG, S)
+        Δ₁⁻ = d₀x * d₀x'
+        Δ₁⁻
+    end
+
+    return Δ₁⁻
 end
 
 function mono_sq_adj_op(
@@ -261,4 +276,34 @@ function LowCohomologySOS.relations(
     end
 
     return vcat(relations_sq, relations_adj)
+end
+
+# For experimental purposes
+function LowCohomologySOS.embed_matrix(
+    M::AbstractMatrix{<:AlgebraElement},
+    i::Groups.Homomorphism, # i is intended to be an embedding
+    RG_prime::StarAlgebra, # we must provide a suitable underlying group ring (it has to be the group ring of i.target)
+    S,
+    S_prime
+)
+    G = i.source
+
+    @assert size(M) == (length(S), length(S))
+
+    S_idies = Dict(S[i] => i for i in eachindex(S))
+    S_prime_idies = Dict(S_prime[i] => i for i in eachindex(S_prime))
+
+    RG = parent(first(M))
+    @assert all(x -> parent(x) === RG, M)
+    @assert G == parent(first(basis(RG)))
+
+    result = [zero(RG_prime) for i in eachindex(S_prime), j in eachindex(S_prime)]
+
+    for s in S
+        for t in S
+            result[S_prime_idies[i(s)],S_prime_idies[i(t)]] = LowCohomologySOS.embed(i, M[S_idies[s],S_idies[t]], RG_prime)
+        end
+    end
+
+    return result
 end
