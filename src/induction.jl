@@ -176,6 +176,8 @@ function mono_sq_adj_op(
     adj = [(i,j) in adj_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
     op = [(i,j) in op_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
 
+    @info mono+sq+adj+op - Δ₁⁻
+
     @assert mono+sq+adj+op == Δ₁⁻
 
     return mono, sq, adj, op
@@ -276,34 +278,4 @@ function LowCohomologySOS.relations(
     end
 
     return vcat(relations_sq, relations_adj)
-end
-
-# For experimental purposes
-function LowCohomologySOS.embed_matrix(
-    M::AbstractMatrix{<:AlgebraElement},
-    i::Groups.Homomorphism, # i is intended to be an embedding
-    RG_prime::StarAlgebra, # we must provide a suitable underlying group ring (it has to be the group ring of i.target)
-    S,
-    S_prime
-)
-    G = i.source
-
-    @assert size(M) == (length(S), length(S))
-
-    S_idies = Dict(S[i] => i for i in eachindex(S))
-    S_prime_idies = Dict(S_prime[i] => i for i in eachindex(S_prime))
-
-    RG = parent(first(M))
-    @assert all(x -> parent(x) === RG, M)
-    @assert G == parent(first(basis(RG)))
-
-    result = [zero(RG_prime) for i in eachindex(S_prime), j in eachindex(S_prime)]
-
-    for s in S
-        for t in S
-            result[S_prime_idies[i(s)],S_prime_idies[i(t)]] = LowCohomologySOS.embed(i, M[S_idies[s],S_idies[t]], RG_prime)
-        end
-    end
-
-    return result
 end
