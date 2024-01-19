@@ -13,7 +13,7 @@ using PermutationGroups
 # TODO: adjust the whole code below to sp2ns
 
 N = 3
-M = 4
+M = 5
 
 i_emb = SP_4_Cohomology.sp2n_sp2m_embedding(2*N, 2*M)
 
@@ -52,42 +52,82 @@ end
 Sp2N_half_basis, Sp2N_sizes = Groups.wlmetric_ball(Sp2N_S_inv, radius = half_radius);
 Sp2M_half_basis, Sp2M_sizes = Groups.wlmetric_ball(Sp2M_S_inv, radius = half_radius);
 
-# Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2N, Sp2N_half_basis, Sp2N_S, sq_adj_ = "adj");
-# Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2M, Sp2M_half_basis, Sp2M_S, sq_adj_ = "adj");
+Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2N, Sp2N_half_basis, Sp2N_S, sq_adj_ = "adj");
+Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = LowCohomologySOS.laplacians(Sp2M, Sp2M_half_basis, Sp2M_S, sq_adj_ = "adj");
 
-Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = SP_4_Cohomology.non_mono_laplacians(Sp2N, Sp2N_half_basis, Sp2N_S_2, twist_coeffs = false);
-Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = SP_4_Cohomology.non_mono_laplacians(Sp2M, Sp2M_half_basis, Sp2M_S_2, twist_coeffs = false);
+# Sp2N_Δ₁, Sp2N_Iₙ, Sp2N_Δ₁⁺, Sp2N_Δ₁⁻ = SP_4_Cohomology.non_mono_laplacians(Sp2N, Sp2N_half_basis, Sp2N_S_2, twist_coeffs = false);
+# Sp2M_Δ₁, Sp2M_Iₙ, Sp2M_Δ₁⁺, Sp2M_Δ₁⁻ = SP_4_Cohomology.non_mono_laplacians(Sp2M, Sp2M_half_basis, Sp2M_S_2, twist_coeffs = false);
 
-# Sp2N_mono, Sp2N_sq, Sp2N_adj, Sp2N_op = SP_4_Cohomology.mono_sq_adj_op(Sp2N_Δ₁⁻, Sp2N_S)
-# Sp2M_mono, Sp2M_sq, Sp2M_adj, Sp2M_op = SP_4_Cohomology.mono_sq_adj_op(Sp2M_Δ₁⁻, Sp2M_S)
+Sp2N_mono, Sp2N_sq, Sp2N_adj_mono, Sp2N_adj_double, Sp2N_op = SP_4_Cohomology.mono_sq_adj_op(Sp2N_Δ₁⁻, Sp2N_S)
+Sp2M_mono, Sp2M_sq, Sp2M_adj_mono, Sp2M_adj_double, Sp2M_op = SP_4_Cohomology.mono_sq_adj_op(Sp2M_Δ₁⁻, Sp2M_S)
 
-Sp2N_mono, Sp2N_sq, Sp2N_adj, Sp2N_op = SP_4_Cohomology.mono_sq_adj_op(Sp2N_Δ₁⁻, Sp2N_S_2)
-Sp2M_mono, Sp2M_sq, Sp2M_adj, Sp2M_op = SP_4_Cohomology.mono_sq_adj_op(Sp2M_Δ₁⁻, Sp2M_S_2)
+# Sp2N_mono, Sp2N_sq, Sp2N_adj, Sp2N_op = SP_4_Cohomology.mono_sq_adj_op(Sp2N_Δ₁⁻, Sp2N_S_2)
+# Sp2M_mono, Sp2M_sq, Sp2M_adj, Sp2M_op = SP_4_Cohomology.mono_sq_adj_op(Sp2M_Δ₁⁻, Sp2M_S_2)
 
 RG = parent(first(Sp2M_Δ₁⁺))
 
-Δ₁⁺_emb = SP_4_Cohomology.non_mono_embed_matrix(Sp2N_Δ₁⁺, i_emb, RG, Sp2N_S_2, Sp2M_S_2)
-adj_emb = SP_4_Cohomology.non_mono_embed_matrix(Sp2N_adj, i_emb, RG, Sp2N_S_2, Sp2M_S_2)
+# For non-mono part 
 
-@assert parent(first(Δ₁⁺_emb)) == parent(first(adj_emb)) == parent(first(Sp2M_Δ₁⁺)) == parent(first(Sp2M_adj))
+# Δ₁⁺_emb = SP_4_Cohomology.non_mono_embed_matrix(Sp2N_Δ₁⁺, i_emb, RG, Sp2N_S_2, Sp2M_S_2)
+# adj_emb = SP_4_Cohomology.non_mono_embed_matrix(Sp2N_adj, i_emb, RG, Sp2N_S_2, Sp2M_S_2)
+
+# @assert parent(first(Δ₁⁺_emb)) == parent(first(adj_emb)) == parent(first(Sp2M_Δ₁⁺)) == parent(first(Sp2M_adj))
+
+# Δ₁⁺_emb_symmetrized = let
+#     Σ = PermutationGroups.SymmetricGroup(4)
+#     LowCohomologySOS.weyl_symmetrize_matrix(Δ₁⁺_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S_2)
+# end
+
+# adj_emb_symmetrized = let
+#     Σ = PermutationGroups.SymmetricGroup(4)
+#     LowCohomologySOS.weyl_symmetrize_matrix(adj_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S_2)
+# end
+
+Δ₁⁺_emb = LowCohomologySOS.embed_matrix(Sp2N_Δ₁⁺, i_emb, RG)
+adj_double_emb = LowCohomologySOS.embed_matrix(Sp2N_adj_double, i_emb, RG)
+adj_mono_emb = LowCohomologySOS.embed_matrix(Sp2N_adj_mono, i_emb, RG)
+
+
+@assert parent(first(Δ₁⁺_emb)) == parent(first(adj_double_emb)) == parent(first(Sp2M_Δ₁⁺)) == parent(first(Sp2M_adj))
 
 Δ₁⁺_emb_symmetrized = let
-    Σ = PermutationGroups.SymmetricGroup(4)
-    LowCohomologySOS.weyl_symmetrize_matrix(Δ₁⁺_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S_2)
+    Σ = PermutationGroups.SymmetricGroup(M)
+    LowCohomologySOS.weyl_symmetrize_matrix(Δ₁⁺_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S)
 end
 
-adj_emb_symmetrized = let
-    Σ = PermutationGroups.SymmetricGroup(4)
-    LowCohomologySOS.weyl_symmetrize_matrix(adj_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S_2)
+adj_mono_emb_symmetrized = let
+    Σ = PermutationGroups.SymmetricGroup(M)
+    LowCohomologySOS.weyl_symmetrize_matrix(adj_mono_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S)
 end
+
+adj_double_emb_symmetrized = let
+    Σ = PermutationGroups.SymmetricGroup(M)
+    LowCohomologySOS.weyl_symmetrize_matrix(adj_double_emb, Σ, SP_4_Cohomology.conjugation, Sp2M_S)
+end
+
 
 # TODO change scalars below:
-zero_matrix = [zero(RG) for i in Sp2M_S_2, j in Sp2M_S_2]
+zero_matrix = [zero(RG) for i in Sp2M_S, j in Sp2M_S]
 
 6*Sp2M_Δ₁⁺-Δ₁⁺_emb_symmetrized  == zero_matrix # it looks like symmetrization works for upper Laplacians!
-6*Sp2M_adj-adj_emb_symmetrized == zero_matrix
+
+12*Sp2M_adj_mono-adj_mono_emb_symmetrized == zero_matrix
+
+6*Sp2M_adj_double-adj_double_emb_symmetrized == zero_matrix
+
 
 @info (6*Sp2M_adj-adj_emb_symmetrized) # looks like adj symmetrizes if we remove Z from gens
+
+A = 6*Sp2M_Δ₁⁺-Δ₁⁺_emb_symmetrized
+
+for i in 1:32
+    for j in 1:32
+        if A[i,j] != zero(RG)
+            print(i, " ", j, ":",A[i,j])
+            print('\n')
+        end
+    end
+end
 
 @info Sp2M_Δ₁⁺[1,1]
 @info Δ₁⁺_emb_symmetrized[1,1]

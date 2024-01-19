@@ -151,7 +151,8 @@ function mono_sq_adj_op(
     N = Int8(sqrt(length(gens(Sp2N))/2))
     mono_pairs = []
     sq_pairs = []
-    adj_pairs = []
+    adj_pairs_mono = []
+    adj_pairs_double = []
     op_pairs = []
     A = alphabet(Sp2N)
     for s in eachindex(S)
@@ -165,7 +166,11 @@ function mono_sq_adj_op(
                     push!(sq_pairs,(s,t))
                 end
             elseif length(intersect!([s_i,s_j],[t_i,t_j])) == 1
-                push!(adj_pairs,(s,t))
+                if s_i == s_j || t_i == t_j
+                    push!(adj_pairs_mono,(s,t))
+                else
+                    push!(adj_pairs_double,(s,t))
+                end
             else
                 push!(op_pairs,(s,t))
             end
@@ -173,14 +178,15 @@ function mono_sq_adj_op(
     end
     mono = [(i,j) in mono_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
     sq = [(i,j) in sq_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
-    adj = [(i,j) in adj_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
+    adj_double = [(i,j) in adj_pairs_double ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
+    adj_mono = [(i,j) in adj_pairs_mono ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
     op = [(i,j) in op_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
 
-    @info mono+sq+adj+op - Δ₁⁻
+    @info mono + sq + adj_double + adj_mono + op - Δ₁⁻
 
-    @assert mono+sq+adj+op == Δ₁⁻
+    @assert mono + sq + adj_double + adj_mono + op == Δ₁⁻
 
-    return mono, sq, adj, op
+    return mono, sq, adj_mono, adj_double, op
 end
 
 function elementary_conjugation(
