@@ -94,27 +94,31 @@ for gen in keys(Steinberg_matrix)
     @assert MatrixGroups.matrix_repr(hom_Steinberg(gen)) == Steinberg_matrix[gen]
 end
 
+function comut(x,y)
+    x*y*x^(-1)*y^(-1)
+end
+
 Steinberg_relations = [
-    com(x_12, y_12) * z_1^(-2),
-    com(x_21,y_12) * z_2^(-2),
-    com(x_12, yt_12) * zt_2^(2),
-    com(x_21,yt_12) * zt_1^(2),
-    com(x_12, z_2) * (z_1 * y_12)^(-1),
-    com(x_12, z_2) * (y_12 * z_1)^(-1),
-    com(x_21, z_1) * (z_2 * y_12)^(-1),
-    com(x_21, z_1) * (y_12 * z_2)^(-1),
-    com(x_12, zt_1) * (zt_2 * yt_12^(-1))^(-1),
-    com(x_12, zt_1) * (yt_12^(-1) * zt_2)^(-1),
-    com(x_21, zt_2) * (zt_1 * yt_12^(-1))^(-1),
-    com(x_21, zt_2) * (yt_12^(-1) * zt_1)^(-1),
-    com(y_12, zt_1) * (x_21 * z_2^(-1))^(-1),
-    com(y_12, zt_1) * (z_2^(-1) * x_21) ^(-1),
-    com(y_12, zt_2) * (x_12 * z_1^(-1))^(-1),
-    com(y_12, zt_2) * (z_1^(-1) * x_12)^(-1),
-    com(yt_12, z_1) * (x_12^(-1) * zt_2^(-1))^(-1),
-    com(yt_12, z_1) * (zt_2^(-1) * x_12^(-1)) ^(-1),
-    com(yt_12, z_2) * (x_21^(-1) * zt_1^(-1))^(-1),
-    com(yt_12, z_2) * (zt_1^(-1) * x_21^(-1))^(-1)
+    comut(x_12, y_12) * z_1^(-2),
+    comut(x_21,y_12) * z_2^(-2),
+    comut(x_12, yt_12) * zt_2^(2),
+    comut(x_21,yt_12) * zt_1^(2),
+    comut(x_12, z_2) * (z_1 * y_12)^(-1),
+    comut(x_12, z_2) * (y_12 * z_1)^(-1),
+    comut(x_21, z_1) * (z_2 * y_12)^(-1),
+    comut(x_21, z_1) * (y_12 * z_2)^(-1),
+    comut(x_12, zt_1) * (zt_2 * yt_12^(-1))^(-1),
+    comut(x_12, zt_1) * (yt_12^(-1) * zt_2)^(-1),
+    comut(x_21, zt_2) * (zt_1 * yt_12^(-1))^(-1),
+    comut(x_21, zt_2) * (yt_12^(-1) * zt_1)^(-1),
+    comut(y_12, zt_1) * (x_21 * z_2^(-1))^(-1),
+    comut(y_12, zt_1) * (z_2^(-1) * x_21) ^(-1),
+    comut(y_12, zt_2) * (x_12 * z_1^(-1))^(-1),
+    comut(y_12, zt_2) * (z_1^(-1) * x_12)^(-1),
+    comut(yt_12, z_1) * (x_12^(-1) * zt_2^(-1))^(-1),
+    comut(yt_12, z_1) * (zt_2^(-1) * x_12^(-1)) ^(-1),
+    comut(yt_12, z_2) * (x_21^(-1) * zt_1^(-1))^(-1),
+    comut(yt_12, z_2) * (zt_1^(-1) * x_21^(-1))^(-1)
 ]
 
 # for r in Steinberg_relations
@@ -150,16 +154,16 @@ result_bool, result = LowCohomologySOS.certify_sos_decomposition(
     support_jacobian
 )
 
-Solution = Dict("lambda" => λ, "Q" => Q)
+# Solution = Dict("lambda" => λ, "Q" => Q)
 
-serialize("./Steinberg_Solution.sjl", Solution)
+# serialize("./Steinberg_Solution.sjl", Solution)
 
-Solution_read = deserialize("./Steinberg_Solution.sjl")
+# Solution_read = deserialize("./Steinberg_Solution.sjl")
 
-LowCohomologySOS.certify_sos_decomposition(
-    Δ₁,
-    I_4,
-    Solution_read["lambda"],
-    Solution_read["Q"],
-    support_jacobian
-)
+# LowCohomologySOS.certify_sos_decomposition(
+#     Δ₁,
+#     I_4,
+#     Solution_read["lambda"],
+#     Solution_read["Q"],
+#     support_jacobian
+# )
