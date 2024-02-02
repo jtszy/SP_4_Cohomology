@@ -238,6 +238,12 @@ function conjugation(
     
 end
 
+function wreath_conjugation(
+    l,
+    g
+)
+
+
 function LowCohomologySOS.relations(
     F_G::Groups.FreeGroup,
     S, # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
