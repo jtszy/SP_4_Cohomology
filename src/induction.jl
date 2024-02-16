@@ -238,10 +238,11 @@ function conjugation(
     
 end
 
-function wreath_conjugation(
-    l,
-    g
-)
+# function wreath_conjugation(
+#     l,
+#     g
+# )
+# end
 
 
 function LowCohomologySOS.relations(

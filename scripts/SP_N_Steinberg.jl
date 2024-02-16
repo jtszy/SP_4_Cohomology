@@ -146,14 +146,29 @@ end
 
 jacobian_matrix_Steinberg = LowCohomologySOS.jacobian_matrix(Steinberg_relations)
 
+first(jacobian_matrix_Steinberg)
+RF = parent(first(jacobian_matrix_Steinberg))
+RF.basis[100]
+word(RF.basis[100])[1:2]
+F_Sp_N_Steinberg(word(RF.basis[100]))
+
+support_jacobian = [one(Sp_N)]
+for r in Steinberg_relations
+    current_factor = one(Sp_N)
+    for i in 1:length(word(r))
+        g = hom_Steinberg(F_Sp_N_Steinberg(word(r)[i:i]))
+        push!(support_jacobian,current_factor*g)
+        push!(support_jacobian,current_factor*g^(-1))
+        current_factor *= g
+    end
+end
+support_jacobian = unique(support_jacobian)
+
 min_support = SP_4_Cohomology.minimalistic_support(jacobian_matrix_Steinberg, hom_Steinberg, Steinberg_group)
 
 function wedderburn_data(basis, half_basis, S)
     @time begin
         N = div(size(first(S))[1], 2)
-        
-        # Z_2_wr_S(n) = Groups.Constructions.WreathProduct(PermutationGroups.SymmetricGroup(2), PermutationGroups.SymmetricGroup(n))
-        # Σ = Z_2_wr_S(N)
 
         Σ = PermutationGroups.SymmetricGroup(N)
 
@@ -164,16 +179,9 @@ function wedderburn_data(basis, half_basis, S)
     return constraints_basis, psd_basis, Σ, actions
 end
 
-# Δ₁, I_N = LowCohomologySOS.spectral_gap_elements(
-#     hom_Steinberg,
-#     Steinberg_relations,
-#     support_jacobian,
-#     # twist_coeffs = false
-# )
+min_support
 
-half_basis, sizes = Groups.wlmetric_ball(gens_Sp_N, radius = 3);
-
-Δ₁, I_N, Δ₁⁺, Δ₁⁻ = LowCohomologySOS.laplacians(Sp_N, half_basis, S, sq_adj_ = "all");
+Δ₁, I_N, Δ₁⁺, Δ₁⁻ = LowCohomologySOS.laplacians(Sp_N, support_jacobian, S, sq_adj_ = "all");
 
 RG = LowCohomologySOS.group_ring(Sp_N, min_support, star_multiplication = true)
 
@@ -184,18 +192,15 @@ I_N = LowCohomologySOS.embed.(identity, I_N, Ref(RG))
 
 basis = RG.basis
 
-constraints_basis, psd_basis, Σ, action = wedderburn_data(basis, support_jacobian, S);
+constraints_basis, psd_basis, Σ, action = wedderburn_data(basis, min_support, S);
 
 M = Δ₁
 
 # there is no point of finding a solution if we don't provide invariant matrix
 for σ in Σ
-    @info σ
     @assert LowCohomologySOS.act_on_matrix(M, σ, action.alphabet_perm, S) == M
     @assert LowCohomologySOS.act_on_matrix(I_N, σ, action.alphabet_perm, S) == I_N
 end
-
-A = LowCohomologySOS.act_on_matrix(M, collect(Σ)[2], action.alphabet_perm, S)
 
 @time begin
     @info "Wedderburn:"
@@ -218,31 +223,3 @@ JuMP.optimize!(sos_problem)
 # Certify the numerical estimate
 λ, Q = LowCohomologySOS.get_solution(sos_problem, P, w_dec_matrix)
 LowCohomologySOS.certify_sos_decomposition(M, I, λ, Q, support_jacobian)
-
-# JuMP.set_optimizer(sos_problem_Steinberg, SP_4_Cohomology.scs_opt(eps = 1e-7, max_iters = 20000))
-
-# JuMP.optimize!(sos_problem_Steinberg)
-
-# λ, Q =  LowCohomologySOS.get_solution(sos_problem_Steinberg)
-
-# result_bool, result = LowCohomologySOS.certify_sos_decomposition(
-#     Δ₁,
-#     I_N,
-#     λ,
-#     Q,
-#     support_jacobian
-# )
-
-# Solution = Dict("lambda" => λ, "Q" => Q)
-
-# serialize("./Steinberg_Solution.sjl", Solution)
-
-# Solution_read = deserialize("./Steinberg_Solution.sjl")
-
-# LowCohomologySOS.certify_sos_decomposition(
-#     Δ₁,
-#     I_4,
-#     Solution_read["lambda"],
-#     Solution_read["Q"],
-#     support_jacobian
-# )
