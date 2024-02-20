@@ -124,6 +124,7 @@ function LowCohomologySOS.laplacians(
     end
 
     relationsx = LowCohomologySOS.relations(F_G, S, N, sq_adj_)
+    print(relationsx)
     return LowCohomologySOS.spectral_gap_elements(quotient_hom, relationsx, half_basis, twist_coeffs = twist_coeffs)
 end
 
@@ -150,8 +151,10 @@ function mono_sq_adj_op(
     Sp2N = parent(first(RG.basis))
     N = Int8(sqrt(length(gens(Sp2N))/2))
     mono_pairs = []
-    sq_pairs = []
-    adj_pairs_mono = []
+    sq_pairs_mono = []
+    sq_pairs_mix = []
+    sq_pairs_double = []
+    adj_pairs_mix = []
     adj_pairs_double = []
     op_pairs = []
     A = alphabet(Sp2N)
@@ -161,32 +164,36 @@ function mono_sq_adj_op(
             t_i, t_j = mod(A[word(S[t])[1]].i,N), mod(A[word(S[t])[1]].j,N)
             if sort([s_i,s_j]) == sort([t_i, t_j])
                 if s_i == s_j
-                    push!(mono_pairs,(s,t))
+                    push!(mono_pairs,(s,t)) #Mono
                 else
-                    push!(sq_pairs,(s,t))
+                    push!(sq_pairs_double,(s,t)) #Sq-double
                 end
             elseif length(intersect!([s_i,s_j],[t_i,t_j])) == 1
                 if s_i == s_j || t_i == t_j
-                    push!(adj_pairs_mono,(s,t))
+                    push!(sq_pairs_mix,(s,t)) #Sq-mixed
                 else
-                    push!(adj_pairs_double,(s,t))
+                    push!(adj_pairs_double,(s,t)) #Adj-double
                 end
-            else
+            elseif s_i == s_j && t_i == t_j
+                push!(sq_pairs_mono,(s,t)) #Sq-mono
+            elseif s_i == s_j || t_i == t_j
+                push!(adj_pairs_mix,(s,t)) #Adj-mixed
+            elseif s_i != s_j && t_i != t_j
                 push!(op_pairs,(s,t))
             end
         end
     end
     mono = [(i,j) in mono_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
-    sq = [(i,j) in sq_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
+    sq_mono = [(i,j) in sq_pairs_mono ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
+    sq_mix = [(i,j) in sq_pairs_mix ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
+    sq_double = [(i,j) in sq_pairs_double ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
     adj_double = [(i,j) in adj_pairs_double ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
-    adj_mono = [(i,j) in adj_pairs_mono ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
+    adj_mix = [(i,j) in adj_pairs_mix ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
     op = [(i,j) in op_pairs ? Δ₁⁻[i,j] : zero(RG) for i in eachindex(S), j in eachindex(S)]
 
-    @info mono + sq + adj_double + adj_mono + op - Δ₁⁻
+    @assert mono + sq_mono + sq_mix + sq_double + adj_double + adj_mix + op == Δ₁⁻
 
-    @assert mono + sq + adj_double + adj_mono + op == Δ₁⁻
-
-    return mono, sq, adj_mono, adj_double, op
+    return mono, sq_mono, sq_mix, sq_double, adj_mix, adj_double, op
 end
 
 function elementary_conjugation(
@@ -288,7 +295,7 @@ function LowCohomologySOS.relations(
         return relations_sq
     elseif sq_adj_ == "adj"
         return relations_adj
+    elseif sq_adj_ == "all"
+        return vcat(relations_sq, relations_adj)
     end
-
-    return vcat(relations_sq, relations_adj)
 end

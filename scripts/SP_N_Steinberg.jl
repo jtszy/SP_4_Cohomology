@@ -179,22 +179,28 @@ function wedderburn_data(basis, half_basis, S)
     return constraints_basis, psd_basis, Σ, actions
 end
 
-min_support
+# min_support
 
-Δ₁, I_N, Δ₁⁺, Δ₁⁻ = LowCohomologySOS.laplacians(Sp_N, support_jacobian, S, sq_adj_ = "all");
+# Δ₁, I_N, Δ₁⁺, Δ₁⁻ = LowCohomologySOS.laplacians(Sp_N, support_jacobian, S, sq_adj_ = "all");
 
 RG = LowCohomologySOS.group_ring(Sp_N, min_support, star_multiplication = true)
 
-Δ₁ = LowCohomologySOS.embed.(identity, Δ₁, Ref(RG))
-I_N = LowCohomologySOS.embed.(identity, I_N, Ref(RG))
-Δ₁⁺ = LowCohomologySOS.embed.(identity, Δ₁⁺, Ref(RG))
-Δ₁⁻ = LowCohomologySOS.embed.(identity, Δ₁⁻, Ref(RG))
+# Δ₁ = LowCohomologySOS.embed.(identity, Δ₁, Ref(RG))
+# I_N = LowCohomologySOS.embed.(identity, I_N, Ref(RG))
+# Δ₁⁺ = LowCohomologySOS.embed.(identity, Δ₁⁺, Ref(RG))
+# Δ₁⁻ = LowCohomologySOS.embed.(identity, Δ₁⁻, Ref(RG))
 
-basis = RG.basis
+basis_RG = RG.basis
 
-constraints_basis, psd_basis, Σ, action = wedderburn_data(basis, min_support, S);
+constraints_basis, psd_basis, Σ, action = wedderburn_data(basis_RG, min_support, S);
 
-M = Δ₁
+# M = Δ₁
+
+Δ₁, I_N, Δ₁⁺, Δ₁⁻ = LowCohomologySOS.laplacians(Sp_N, support_jacobian, S, sq_adj_ = "adj");
+
+mono, sq, adj_mono, adj_double, op = SP_4_Cohomology.mono_sq_adj_op(Δ₁⁻, S)
+
+M = Δ₁⁺ + adj_mono
 
 # there is no point of finding a solution if we don't provide invariant matrix
 for σ in Σ
@@ -214,7 +220,7 @@ end
         w_dec_matrix
         # 0.7 / 0.05
     )
-end 
+end
 
 # Find a numerical spectral gap
 JuMP.set_optimizer(sos_problem, SP_4_Cohomology.scs_opt(eps = 1e-5, max_iters = 20000))
