@@ -5,12 +5,18 @@ using Groups
 using JuMP
 using SCS
 using LowCohomologySOS
+using LinearAlgebra
 using PermutationGroups
 using StarAlgebras
+using IntervalArithmetic
 
+Base.adjoint(X::AlgebraElement) = StarAlgebras.star(X)
+StarAlgebras.star(g::Groups.AbstractFPGroupElement) = inv(g)
+
+include("certification.jl")
 include("common_functions.jl")
-include("utils.jl")
-include("induction.jl")
-include("non_mono_induction.jl")
+include("optimizers.jl")
+include("laplacians.jl")
+include("wedderburn.jl")
 
 end

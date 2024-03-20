@@ -198,9 +198,14 @@ constraints_basis, psd_basis, Σ, action = wedderburn_data(basis_RG, min_support
 
 Δ₁, I_N, Δ₁⁺, Δ₁⁻ = LowCohomologySOS.laplacians(Sp_N, support_jacobian, S, sq_adj_ = "adj");
 
-mono, sq, adj_mono, adj_double, op = SP_4_Cohomology.mono_sq_adj_op(Δ₁⁻, S)
+Δ₁ = LowCohomologySOS.embed.(identity, Δ₁, Ref(RG))
+I_N = LowCohomologySOS.embed.(identity, I_N, Ref(RG))
+Δ₁⁺ = LowCohomologySOS.embed.(identity, Δ₁⁺, Ref(RG))
+Δ₁⁻ = LowCohomologySOS.embed.(identity, Δ₁⁻, Ref(RG))
 
-M = Δ₁⁺ + adj_mono
+mono, sq_mono, sq_mix, sq_double, adj_mix, adj_double, op = SP_4_Cohomology.mono_sq_adj_op(Δ₁⁻, S)
+
+M = Δ₁⁺
 
 # there is no point of finding a solution if we don't provide invariant matrix
 for σ in Σ
@@ -223,7 +228,7 @@ end
 end
 
 # Find a numerical spectral gap
-JuMP.set_optimizer(sos_problem, SP_4_Cohomology.scs_opt(eps = 1e-5, max_iters = 20000))
+JuMP.set_optimizer(sos_problem, SP_4_Cohomology.scs_opt(eps = 1e-5, max_iters = 5000))
 JuMP.optimize!(sos_problem)
 
 # Certify the numerical estimate
