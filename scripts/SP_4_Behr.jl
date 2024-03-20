@@ -103,10 +103,10 @@ end
 
 jacobian_matrix_Behr = LowCohomologySOS.jacobian_matrix(Behr_relations)
 
-support_jacobian = SP_4_Cohomology.minimalistic_support(jacobian_matrix_Behr, hom_Behr, Behr_group)
+support_jacobian = SP_4_Cohomology.minimalistic_support(jacobian_matrix_Behr, quotient_hom_Behr, Behr_group)
 
 Δ₁, I_ = LowCohomologySOS.spectral_gap_elements(
-    hom_Behr,
+    quotient_hom_Behr,
     Behr_relations,
     support_jacobian,
 )
