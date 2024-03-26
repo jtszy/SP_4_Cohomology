@@ -16,7 +16,7 @@ StarAlgebras.star(g::Groups.AbstractFPGroupElement) = inv(g)
 include("certification.jl")
 include("common_functions.jl")
 include("optimizers.jl")
-include("laplacians.jl")
+include("relations.jl")
 include("wedderburn.jl")
 
 end

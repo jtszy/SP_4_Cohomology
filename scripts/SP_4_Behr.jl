@@ -13,10 +13,6 @@ using SP_4_Cohomology
 using SparseArrays
 
 sp4 = MatrixGroups.SymplecticGroup{4}(Int8)
-a12, a21, b31, b42, b32, b13, b24, b23 = gens(sp4)
-
-F_sp4 = FreeGroup(alphabet(sp4))
-A12, A21, B31, B42, B32, B13, B24, B23 = gens(F_sp4)
 
 F_sp4_Behr = FreeGroup(6)
 x_a, x_b, x_ab, x_2ab, w_a, w_b = gens(F_sp4_Behr)
@@ -73,7 +69,6 @@ for g in Ball_4
     end
 end
 
-
 quotient_hom_Behr = SP_4_Cohomology.quotient_homomorphism(F_sp4_Behr, sp4, Behr_group)
 
 Behr_relations = [
@@ -103,12 +98,12 @@ end
 
 jacobian_matrix_Behr = LowCohomologySOS.jacobian_matrix(Behr_relations)
 
-support_jacobian = SP_4_Cohomology.minimalistic_support(jacobian_matrix_Behr, quotient_hom_Behr, Behr_group)
+min_support = SP_4_Cohomology.minimalistic_support(Behr_relations, quotient_hom_Behr)
 
 Δ₁, I_ = LowCohomologySOS.spectral_gap_elements(
     quotient_hom_Behr,
     Behr_relations,
-    support_jacobian,
+    min_support,
 )
 
 sos_problem_Behr = LowCohomologySOS.sos_problem(
@@ -127,5 +122,5 @@ result_bool, result = LowCohomologySOS.certify_sos_decomposition(
     I_,
     λ,
     Q,
-    support_jacobian,
+    min_support,
 )
