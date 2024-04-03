@@ -18,12 +18,6 @@ function com(x,y)
     x*y*x^(-1)*y^(-1)
 end
 
-function E(i,j,N)
-    res = [0 for i in 1:2*N, j in 1:2*N]
-    res[i,j] = 1
-    return res
-end
-
 function minimalistic_support(relations, quotient_hom)
     jacobian_matrix = LowCohomologySOS.jacobian_matrix(relations)
 
