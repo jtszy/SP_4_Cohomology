@@ -50,7 +50,6 @@ function support_jacobian(relations, quotient_hom)
         for i in 1:length(word(r))
             g = quotient_hom(F_G(word(r)[i:i]))
             push!(support_jacobian,current_factor*g)
-            push!(support_jacobian,current_factor*g^(-1))
             current_factor *= g
         end
     end
