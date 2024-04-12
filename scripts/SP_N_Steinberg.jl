@@ -15,7 +15,7 @@ using SP_4_Cohomology
 using SparseArrays
 using SymbolicWedderburn
 
-N = 2
+N = 3
 
 Sp_N = MatrixGroups.SymplecticGroup{2*N}(Int8)
 
@@ -35,6 +35,10 @@ end
 support_jacobian, min_support = SP_4_Cohomology.symplectic_min_supports(quotient_hom_Steinberg, S)
 
 Steinberg_relations = SP_4_Cohomology.relations_St(F_Sp_N_Steinberg, S, N)
+
+for r in Steinberg_relations
+    @assert quotient_hom_Steinberg(r) == one(Sp_N)
+end
 
 Δ₁, I_N = LowCohomologySOS.spectral_gap_elements(quotient_hom_Steinberg, Steinberg_relations, support_jacobian);
 
@@ -66,9 +70,13 @@ end
 end
 
 # Find a numerical spectral gap
-JuMP.set_optimizer(sos_problem, SP_4_Cohomology.scs_opt(eps = 1e-5, max_iters = 500))
+JuMP.set_optimizer(sos_problem, SP_4_Cohomology.scs_opt(eps = 1e-5, max_iters = 57000))
 JuMP.optimize!(sos_problem)
 
 # Certify the numerical estimate
 λ, Q = LowCohomologySOS.get_solution(sos_problem, P, w_dec_matrix)
-LowCohomologySOS.certify_sos_decomposition(M, I, λ, Q, support_jacobian)
+LowCohomologySOS.certify_sos_decomposition(Δ₁, I_N, λ, Q, min_support)
+
+Solution = Dict("lambda" => λ, "Q" => Q)
+
+serialize("./Steinberg_Solution_Sp_6.sjl", Solution)
