@@ -124,3 +124,6 @@ result_bool, result = LowCohomologySOS.certify_sos_decomposition(
     Q,
     min_support,
 )
+
+# Solution = Dict("lambda" => λ, "Q" => Q)
+# serialize("./replication_precomputed_solutions/Behr_Solution_Sp_4.sjl", Solution)

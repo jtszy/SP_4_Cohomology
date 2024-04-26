@@ -15,34 +15,34 @@ using SP_4_Cohomology
 using SparseArrays
 using SymbolicWedderburn
 
-N = 3
+N = Int8(ARGS[1])
 
-Sp_N = MatrixGroups.SymplecticGroup{2*N}(Int8)
+Sp_2N = MatrixGroups.SymplecticGroup{2*N}(Int8)
 
-F_Sp_N_Steinberg = FreeGroup(alphabet(Sp_N))
+F_Sp_2N_Steinberg = FreeGroup(alphabet(Sp_2N))
 
-S = gens(Sp_N)
+S = gens(Sp_2N)
 
-quotient_hom_Steinberg = let source = F_Sp_N_Steinberg, target = Sp_N
+quotient_hom_Steinberg = let source = F_Sp_2N_Steinberg, target = Sp_2N
     Groups.Homomorphism((i, F, G) -> Groups.word_type(G)([i]), source, target)
 end
 
 for i in eachindex(S)
-    @assert quotient_hom_Steinberg(gens(F_Sp_N_Steinberg,i)) == S[i]
-    @assert quotient_hom_Steinberg(gens(F_Sp_N_Steinberg,i)^(-1)) == S[i]^(-1)
+    @assert quotient_hom_Steinberg(gens(F_Sp_2N_Steinberg,i)) == S[i]
+    @assert quotient_hom_Steinberg(gens(F_Sp_2N_Steinberg,i)^(-1)) == S[i]^(-1)
 end
 
 support_jacobian, min_support = SP_4_Cohomology.symplectic_min_supports(quotient_hom_Steinberg, S)
 
-Steinberg_relations = SP_4_Cohomology.relations_St(F_Sp_N_Steinberg, S, N)
+Steinberg_relations = SP_4_Cohomology.relations_St(F_Sp_2N_Steinberg, S, N)
 
 for r in Steinberg_relations
-    @assert quotient_hom_Steinberg(r) == one(Sp_N)
+    @assert quotient_hom_Steinberg(r) == one(Sp_2N)
 end
 
 Δ₁, I_N = LowCohomologySOS.spectral_gap_elements(quotient_hom_Steinberg, Steinberg_relations, support_jacobian);
 
-RG = LowCohomologySOS.group_ring(Sp_N, min_support, star_multiplication = true)
+RG = LowCohomologySOS.group_ring(Sp_2N, min_support, star_multiplication = true)
 
 Δ₁ = LowCohomologySOS.embed.(identity, Δ₁, Ref(RG))
 I_N = LowCohomologySOS.embed.(identity, I_N, Ref(RG))
@@ -77,6 +77,5 @@ JuMP.optimize!(sos_problem)
 λ, Q = LowCohomologySOS.get_solution(sos_problem, P, w_dec_matrix)
 LowCohomologySOS.certify_sos_decomposition(Δ₁, I_N, λ, Q, min_support)
 
-Solution = Dict("lambda" => λ, "Q" => Q)
-
-serialize("./Steinberg_Solution_Sp_6.sjl", Solution)
+# Solution = Dict("lambda" => λ, "Q" => Q)
+# serialize("./replication_precomputed_solutions/Steinberg_Solution_Sp_"*string(2*N)*".sjl", Solution)
