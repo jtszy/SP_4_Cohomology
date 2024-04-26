@@ -3,3 +3,4 @@ using SP_4_Cohomology
 using Test
 
 include("common_functions_test.jl")
+include("relations_tests.jl")
