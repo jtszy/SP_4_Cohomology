@@ -11,11 +11,6 @@ To obtain the code for the replication, you can either download it directly from
 ```bash
 git clone https://github.com/jtszy/SP_4_Cohomology.git
 ```
-and checkout to the correct branch
-```bash
-cd SP_4_Cohomology
-git checkout TO FILL
-```
 
 ## Setting up the environment
 First, run julia in the terminal in `SP_4_Cohomology` folder
