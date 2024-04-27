@@ -1,3 +1,6 @@
+# We provide more subtle version of certification - it turns out that one can 
+# add the maximum ℓ₁-norm among all rows of the matrix instead of the whole
+# ℓ₁-norm of the matrix.
 function LowCohomologySOS.certify_sos_decomposition(
     X,
     order_unit,
