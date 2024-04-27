@@ -70,7 +70,8 @@ end
 end
 
 # Find a numerical spectral gap
-JuMP.set_optimizer(sos_problem, SP_4_Cohomology.scs_opt(eps = 1e-6, max_iters = 250_000))
+max_iters_ = (N == 2 ? 8_000 : 250_000)
+JuMP.set_optimizer(sos_problem, SP_4_Cohomology.scs_opt(eps = 1e-6, max_iters = max_iters_))
 JuMP.optimize!(sos_problem)
 
 # Certify the numerical estimate
