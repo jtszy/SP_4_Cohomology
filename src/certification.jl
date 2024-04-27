@@ -28,5 +28,6 @@ function LowCohomologySOS.certify_sos_decomposition(
     
     result = λ_interval - l1_norm
     
-    return result.lo > 0, result
+    @info "Is a positive spectral gap certidied? ", result.lo > 0
+    @info "Cetified value: ", result.lo
 end
