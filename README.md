@@ -1,6 +1,6 @@
 # Replication details for [TO FILL](TO FILL)
 
-This is the replication code for providing lower bounds for the spectral gaps of the cohomological Laplacians $\Delta_1$ for the symplectic groups $\text{Sp}_{4}(\mathbb{Z})$ and $\text{Sp}_{6}(\mathbb{Z})$. 
+This is the replication code for providing lower bounds for the spectral gaps of the cohomological Laplacians $\Delta_1$ for the symplectic groups $\text{Sp}_4(\mathbb{Z})$ and $\text{Sp}_6(\mathbb{Z})$. 
 
 The details concerning the definitions of $\Delta_1$ and the spectral gap can be found in the [arXiv preprint](TO FILL) concerning this repository, as well as in the README file of the [LowCohomologySOS](https://github.com/piotrmizerka/LowCohomologySOS.git) repository which provides some of the necessary procedures for this repository as well.
 
