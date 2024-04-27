@@ -1,5 +1,5 @@
 using Pkg
-Pkg.activate(normpath(joinpath(@__DIR__, "../")))
+Pkg.activate(normpath(joinpath(@__DIR__, "../../")))
 using LinearAlgebra
 ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS ÷ 2
 LinearAlgebra.BLAS.set_num_threads(Sys.CPU_THREADS ÷ 2)
@@ -13,7 +13,7 @@ using Serialization
 using SP_4_Cohomology
 using SparseArrays
 
-N = Int8(ARGS[1])
+N = 3
 
 Sp_2N = MatrixGroups.SymplecticGroup{2*N}(Int8)
 
@@ -46,7 +46,7 @@ RG = LowCohomologySOS.group_ring(Sp_2N, min_support, star_multiplication = true)
 I_N = LowCohomologySOS.embed.(identity, I_N, Ref(RG))
 
 # Load the precomputed solution
-Solution = deserialize("./replication_precomputed_solutions/Steinberg_Solution_Sp_"*string(2*N)*".sjl")
+Solution = deserialize("./scripts/SP_6_replication_precomputed/Steinberg_Solution_Sp_"*string(2*N)*".sjl")
 λ, Q = Solution["lambda"], Solution["Q"]
 
 # Certify the numerical estimate
