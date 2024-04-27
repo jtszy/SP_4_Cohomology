@@ -15,7 +15,7 @@ using SP_4_Cohomology
 using SparseArrays
 using SymbolicWedderburn
 
-N = Int8(ARGS[1])
+N = parse(Int8,ARGS[1])
 
 Sp_2N = MatrixGroups.SymplecticGroup{2*N}(Int8)
 
@@ -61,16 +61,16 @@ end
 end
 
 @time begin
+    @info "SDP problem definition"
     sos_problem, P = LowCohomologySOS.sos_problem(
         Δ₁,
         I_N,
         w_dec_matrix
-        # 0.7 / 0.05
     )
 end
 
 # Find a numerical spectral gap
-JuMP.set_optimizer(sos_problem, SP_4_Cohomology.scs_opt(eps = 1e-5, max_iters = 57000))
+JuMP.set_optimizer(sos_problem, SP_4_Cohomology.scs_opt(eps = 1e-6, max_iters = 250_000))
 JuMP.optimize!(sos_problem)
 
 # Certify the numerical estimate
@@ -78,4 +78,4 @@ JuMP.optimize!(sos_problem)
 LowCohomologySOS.certify_sos_decomposition(Δ₁, I_N, λ, Q, min_support)
 
 # Solution = Dict("lambda" => λ, "Q" => Q)
-# serialize("./replication_precomputed_solutions/Steinberg_Solution_Sp_"*string(2*N)*".sjl", Solution)
+# serialize("./scripts/SP_6_replication_precomputed/Steinberg_Solution_Sp_6.sjl", Solution)

@@ -28,7 +28,7 @@ end
     e12, e13, e21, e23, e31, e32 = Groups.gens(sl_3)
 
     @test SP_4_Cohomology.com(e12, e13) == one(sl_3)
-    @test SP_4_Cohomology.com(e12, e32) == oen(sl_3)
+    @test SP_4_Cohomology.com(e12, e32) == one(sl_3)
     @test SP_4_Cohomology.com(e13, e23) == one(sl_3)
     @test SP_4_Cohomology.com(e21, e23) == one(sl_3)
     @test SP_4_Cohomology.com(e21, e31) == one(sl_3)
