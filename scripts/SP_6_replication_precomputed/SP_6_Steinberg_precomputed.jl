@@ -46,7 +46,12 @@ RG = LowCohomologySOS.group_ring(Sp_2N, min_support, star_multiplication = true)
 I_N = LowCohomologySOS.embed.(identity, I_N, Ref(RG))
 
 # Load the precomputed solution
-Solution = deserialize("./scripts/SP_6_replication_precomputed/Steinberg_Solution_Sp_"*string(2*N)*".sjl")
+if ARGS[1] == "true"
+    pathx = "./scripts/SP_6_replication_precomputed/Steinberg_Solution_Sp_"*string(2*N)*"_redundant_rels.sjl"
+else
+    pathx = "./scripts/SP_6_replication_precomputed/Steinberg_Solution_Sp_"*string(2*N)*".sjl"
+end
+Solution = deserialize(pathx)
 λ, Q = Solution["lambda"], Solution["Q"]
 
 # Certify the numerical estimate

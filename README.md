@@ -29,6 +29,8 @@ Note that this step needs to be executed only once per installation.
 We wish to prove that for the Steinberg presentations of $\text{Sp}_4(\mathbb{Z})$ and $\text{Sp}_6(\mathbb{Z})$ on $12$ and $18$ generators respectively (as defined in TO FILL SECTION [TO FILL](TO FILL))
 $\Delta_1-\lambda I_{12}$ and $\Delta_1-\lambda I_{18}$ is a sum of squares for $\lambda=0.0833$ and $\lambda=0.0302$ respectively.
 
+TODO: describe better the presentation with redudant relation: $\lambda=0.0.483$ for $\text{Sp}_6(\mathbb{Z})$ and $\lambda=??$ for $\text{Sp}_4(\mathbb{Z})$.
+
 In addition, we provide a srcipt for the estimation of the spectral gap of $\Delta_1$ for the Behr presentation on six generators of $\text{Sp}_4(\mathbb{Z})$ (details to be found in TO FILL SECTION of [TO FILL](TO FILL)). The script certifies that $\Delta_1-\lambda I_6$ is a sum of squares for $\lambda=0.0789$.
 
 Our scripts perform the necessary optimizations to find such sums of squares decomposition.

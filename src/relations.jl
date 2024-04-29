@@ -2,7 +2,8 @@ function relations_St(
     F_G::Groups.FreeGroup,
     S, # the generating set for G: either elementary matrices for SL(n,ℤ) or Nielsen transvections for SAut(Fₙ)
     N::Integer;
-    sq_adj_ = "all"
+    sq_adj_ = "all",
+    redundant_rels = false
 )
     gen_dict = Dict(LowCohomologySOS.determine_letter(S[i]) => gens(F_G, i) for i in eachindex(S))
 
@@ -23,19 +24,38 @@ function relations_St(
         [com(x(i,j),y(j,k))*y(i,k)^(-1) for (i,j,k) in triples],
         [com(x(i,j),yt(i,k))*yt(j,k) for (i,j,k) in triples]                
     )
-
-    relations_sq = vcat(
-        [com(x(i,j),y(i,j))*z(i)^(-2) for (i,j) in pairs],
-        [com(x(i,j),yt(i,j))*zt(j)^2 for (i,j) in pairs],
-        [com(x(i,j),z(j))*(y(i,j)*z(i))^(-1) for (i,j) in pairs],
-        [com(z(i),y(i,j)) for (i,j) in pairs],
-        [com(x(i,j),zt(i))*yt(i,j)*zt(j)^(-1) for (i,j) in pairs],
-        [com(zt(j),yt(i,j)^(-1)) for (i,j) in pairs],
-        [com(y(i,j),zt(i))*z(j)*x(j,i)^(-1) for (i,j) in pairs],
-        [com(x(j,i),z(j)^(-1)) for (i,j) in pairs],
-        [com(yt(i,j), z(i))*zt(j)*x(i,j) for (i,j) in pairs],
-        [com(x(i,j),zt(j)) for (i,j) in pairs]
-    )
+    
+    if !redundant_rels
+        relations_sq = vcat(
+            [com(x(i,j),y(i,j))*z(i)^(-2) for (i,j) in pairs],
+            [com(x(i,j),yt(i,j))*zt(j)^2 for (i,j) in pairs],
+            [com(x(i,j),z(j))*(y(i,j)*z(i))^(-1) for (i,j) in pairs],
+            [com(z(i),y(i,j)) for (i,j) in pairs],
+            [com(x(i,j),zt(i))*yt(i,j)*zt(j)^(-1) for (i,j) in pairs],
+            [com(zt(j),yt(i,j)^(-1)) for (i,j) in pairs],
+            [com(y(i,j),zt(i))*z(j)*x(j,i)^(-1) for (i,j) in pairs],
+            [com(x(j,i),z(j)^(-1)) for (i,j) in pairs],
+            [com(yt(i,j), z(i))*zt(j)*x(i,j) for (i,j) in pairs],
+            [com(x(i,j),zt(j)) for (i,j) in pairs]
+        )
+    else
+        relations_sq = vcat(
+            [com(x(i,j),y(i,j))*z(i)^(-2) for (i,j) in pairs],
+            [com(x(i,j),yt(i,j))*zt(j)^2 for (i,j) in pairs],
+            [com(x(i,j),z(j))*(y(i,j)*z(i))^(-1) for (i,j) in pairs],
+            [com(x(i,j),z(j))*(z(i)*y(i,j))^(-1) for (i,j) in pairs],
+            [com(z(i),y(i,j)) for (i,j) in pairs],
+            [com(x(i,j),zt(i))*yt(i,j)*zt(j)^(-1) for (i,j) in pairs],
+            [com(x(i,j),zt(i))*zt(j)^(-1)*yt(i,j) for (i,j) in pairs],
+            [com(zt(j),yt(i,j)^(-1)) for (i,j) in pairs],
+            [com(y(i,j),zt(i))*z(j)*x(j,i)^(-1) for (i,j) in pairs],
+            [com(y(i,j),zt(i))*x(j,i)^(-1)*z(j) for (i,j) in pairs],
+            [com(x(j,i),z(j)^(-1)) for (i,j) in pairs],
+            [com(yt(i,j), z(i))*zt(j)*x(i,j) for (i,j) in pairs],
+            [com(yt(i,j), z(i))*x(i,j)*zt(j) for (i,j) in pairs],
+            [com(x(i,j),zt(j)) for (i,j) in pairs]
+        )
+    end
 
     if sq_adj_ == "sq" 
         return relations_sq
