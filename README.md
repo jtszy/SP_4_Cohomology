@@ -29,7 +29,7 @@ Note that this step needs to be executed only once per installation.
 We wish to prove that for the Steinberg presentations of $\text{Sp}_4(\mathbb{Z})$ and $\text{Sp}_6(\mathbb{Z})$ on $12$ and $18$ generators respectively (as defined in TO FILL SECTION [TO FILL](TO FILL))
 $\Delta_1-\lambda I_{12}$ and $\Delta_1-\lambda I_{18}$ is a sum of squares for $\lambda=0.0833$ and $\lambda=0.0302$ respectively.
 
-TODO: describe better the presentation with redudant relation: $\lambda=0.0.483$ for $\text{Sp}_6(\mathbb{Z})$ and $\lambda=??$ for $\text{Sp}_4(\mathbb{Z})$.
+TODO: describe better the presentation with redudant relation: $\lambda=0.0483$ for $\text{Sp}_6(\mathbb{Z})$ and $\lambda=0.1432$ for $\text{Sp}_4(\mathbb{Z})$.
 
 In addition, we provide a srcipt for the estimation of the spectral gap of $\Delta_1$ for the Behr presentation on six generators of $\text{Sp}_4(\mathbb{Z})$ (details to be found in TO FILL SECTION of [TO FILL](TO FILL)). The script certifies that $\Delta_1-\lambda I_6$ is a sum of squares for $\lambda=0.0789$.
 
@@ -42,7 +42,7 @@ julia --project=. ./scripts/SP_2N_Steinberg.jl n
 ```
 for running the whole replication script for $\text{Sp}_{2n}(\mathbb{Z})$ for $n=2$ and $n=3$.
 
-The running time of the script will be approximately `25` minutes and `115` hours on a standard laptop computer for the cases $n=2$ and $n=3$ respectively. Therefore, in the latter case, we encourage to use the precomputed solution, focusing on the part providing the rigorous proof only.
+The running time of the script will be approximately `25` minutes (`15` minutes for the redundant relations' case) and `115` hours on a standard laptop computer for the cases $n=2$ and $n=3$ respectively. Therefore, in the latter case, we encourage to use the precomputed solution, focusing on the part providing the rigorous proof only.
 
 To run the script which uses the precomputed solution for $\text{Sp}_6(\mathbb{Z})$ (stored in the file "Steinberg_Solution_Sp_6.sjl", where $n=2,3$) and provides rigorous proof (certification) of the result, the following command needs to be executed in the terminal in `SP_4_Cohomology` folder:
 ```bash
