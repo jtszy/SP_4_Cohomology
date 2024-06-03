@@ -32,7 +32,9 @@ end
 
 support_jacobian, min_support = SP_4_Cohomology.symplectic_min_supports(quotient_hom_Steinberg, S)
 
-Steinberg_relations = SP_4_Cohomology.relations_St(F_Sp_2N_Steinberg, S, N)
+redundant_rels = parse(Bool,ARGS[1])
+
+Steinberg_relations = SP_4_Cohomology.relations_St(F_Sp_2N_Steinberg, S, N, redundant_rels = redundant_rels)
 
 for r in Steinberg_relations
     @assert quotient_hom_Steinberg(r) == one(Sp_2N)
@@ -46,7 +48,7 @@ RG = LowCohomologySOS.group_ring(Sp_2N, min_support, star_multiplication = true)
 I_N = LowCohomologySOS.embed.(identity, I_N, Ref(RG))
 
 # Load the precomputed solution
-if ARGS[1] == "true"
+if redundant_rels
     pathx = "./scripts/SP_6_replication_precomputed/Steinberg_Solution_Sp_"*string(2*N)*"_redundant_rels.sjl"
 else
     pathx = "./scripts/SP_6_replication_precomputed/Steinberg_Solution_Sp_"*string(2*N)*".sjl"
